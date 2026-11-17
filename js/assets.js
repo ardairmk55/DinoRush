@@ -1,0 +1,1 @@
+(function(w){"use strict";const DR=w.DinoRush,images={};DR.Assets={load(){const list=w.DinoRushAssetManifest||{};return Promise.all(Object.keys(list).map(key=>new Promise(resolve=>{const image=new Image();image.onload=()=>{images[key]=image;resolve(true);};image.onerror=()=>resolve(false);image.src=list[key];})));},get(name){return images[name]||null;}};})(window);

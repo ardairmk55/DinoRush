@@ -1,0 +1,19 @@
+# Yayın paketi: GitHub Actions her yüklemede yeniden üretir (python tools/build_dist.py)
+dist/
+
+# Test ve ölçüm çıktıları (tools/make_ui_assets.py ve tarayıcı testleri yeniden üretir)
+tests/screenshots/
+
+# Geçici dosyalar
+*.gecici
+*.tmp
+__pycache__/
+*.pyc
+node_modules/
+
+# İşletim sistemi / düzenleyici
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/

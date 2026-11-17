@@ -1,0 +1,357 @@
+{
+ "frames": {
+  "btn_primary": {
+   "size": [
+    1000,
+    311
+   ],
+   "key_out": 215,
+   "slice": [
+    155,
+    219,
+    156,
+    228
+   ],
+   "stretch": "x",
+   "flat_x": 7.08,
+   "flat_y": 0.0,
+   "bytes": 38298,
+   "png": "palet256+bayer",
+   "quant_rmse": 2.34,
+   "flat_ok": true,
+   "inset": [
+    38,
+    88,
+    92,
+    89
+   ],
+   "band": [
+    15,
+    96
+   ],
+   "face": [
+    49,
+    134
+   ]
+  },
+  "btn_secondary": {
+   "size": [
+    700,
+    186
+   ],
+   "key_out": 208.0,
+   "slice": [
+    93,
+    128,
+    93,
+    131
+   ],
+   "stretch": "x",
+   "flat_x": 3.82,
+   "flat_y": 0.0,
+   "bytes": 18638,
+   "png": "palet256+bayer",
+   "quant_rmse": 1.44,
+   "flat_ok": true,
+   "inset": [
+    19,
+    38,
+    54,
+    38
+   ],
+   "band": [
+    11,
+    53
+   ],
+   "face": [
+    24,
+    67
+   ]
+  },
+  "panel_frame": {
+   "size": [
+    1200,
+    782
+   ],
+   "key_out": 141.0,
+   "slice": [
+    120,
+    158,
+    123,
+    165
+   ],
+   "stretch": "xy",
+   "flat_x": 1.0,
+   "flat_y": 1.32,
+   "bytes": 129878,
+   "png": "palet256+bayer",
+   "quant_rmse": 1.53,
+   "flat_ok": true,
+   "side_plate_rows": {
+    "satir": [
+     233,
+     536
+    ]
+   },
+   "side_edge_std_before": 21.58,
+   "side_edge_std_after": 5.32,
+   "slice_pass1": [
+    82,
+    129,
+    101,
+    128
+   ],
+   "inset": [
+    52,
+    49,
+    54,
+    51
+   ]
+  },
+  "card_frame": {
+   "size": [
+    700,
+    418
+   ],
+   "key_out": 209.8,
+   "slice": [
+    84,
+    110,
+    89,
+    115
+   ],
+   "stretch": "xy",
+   "flat_x": 1.09,
+   "flat_y": 1.48,
+   "bytes": 42724,
+   "png": "palet256+bayer",
+   "quant_rmse": 1.62,
+   "flat_ok": true,
+   "slice_pass1": [
+    71,
+    110,
+    84,
+    102
+   ],
+   "inset": [
+    40,
+    53,
+    57,
+    57
+   ]
+  },
+  "plate_record": {
+   "size": [
+    900,
+    256
+   ],
+   "key_out": 204.0,
+   "slice": [
+    128,
+    200,
+    128,
+    202
+   ],
+   "stretch": "x",
+   "flat_x": 6.77,
+   "flat_y": 0.0,
+   "bytes": 41537,
+   "png": "palet256+bayer",
+   "quant_rmse": 1.95,
+   "flat_ok": true,
+   "inset": [
+    31,
+    120,
+    64,
+    123
+   ],
+   "band": [
+    16,
+    49
+   ],
+   "face": [
+    36,
+    71
+   ]
+  },
+  "pill_counter": {
+   "size": [
+    700,
+    216
+   ],
+   "key_out": 195.0,
+   "slice": [
+    108,
+    144,
+    108,
+    195
+   ],
+   "stretch": "x",
+   "flat_x": 1.68,
+   "flat_y": 0.0,
+   "bytes": 30731,
+   "png": "palet256+bayer",
+   "quant_rmse": 2.44,
+   "flat_ok": true,
+   "inset": [
+    25,
+    31,
+    39,
+    63
+   ],
+   "band": [
+    10,
+    23
+   ],
+   "face": [
+    32,
+    44
+   ],
+   "slot": {
+    "cx": 118.0,
+    "cy": 100.0,
+    "w": 128,
+    "h": 102
+   }
+  },
+  "plank_tagline": {
+   "size": [
+    1000,
+    237
+   ],
+   "key_out": 210.0,
+   "slice": [
+    118,
+    147,
+    119,
+    143
+   ],
+   "stretch": "x",
+   "flat_x": 5.87,
+   "flat_y": 0.0,
+   "bytes": 31803,
+   "png": "palet256+bayer",
+   "quant_rmse": 2.28,
+   "flat_ok": true,
+   "inset": null,
+   "band": [
+    16,
+    116
+   ],
+   "face": [
+    27,
+    128
+   ]
+  }
+ },
+ "icons": {
+  "icon_ammonite": {
+   "size": [
+    96,
+    96
+   ],
+   "bytes": 5356
+  },
+  "icon_trophy": {
+   "size": [
+    96,
+    96
+   ],
+   "bytes": 5210
+  },
+  "icon_gear": {
+   "size": [
+    96,
+    96
+   ],
+   "bytes": 4891
+  },
+  "icon_lock": {
+   "size": [
+    96,
+    96
+   ],
+   "bytes": 5343
+  },
+  "icon_check": {
+   "size": [
+    96,
+    96
+   ],
+   "bytes": 5993
+  },
+  "icon_close": {
+   "size": [
+    96,
+    96
+   ],
+   "bytes": 5691
+  },
+  "icon_back": {
+   "size": [
+    96,
+    96
+   ],
+   "bytes": 5041
+  },
+  "icon_play": {
+   "size": [
+    96,
+    96
+   ],
+   "bytes": 5061
+  },
+  "icon_fullscreen": {
+   "size": [
+    96,
+    96
+   ],
+   "bytes": 5034
+  }
+ },
+ "moss": {
+  "moss_1": {
+   "size": [
+    461,
+    160
+   ],
+   "bytes": 22226
+  },
+  "moss_2": {
+   "size": [
+    323,
+    160
+   ],
+   "bytes": 18377
+  },
+  "moss_3": {
+   "size": [
+    393,
+    160
+   ],
+   "bytes": 19790
+  },
+  "moss_4": {
+   "size": [
+    792,
+    160
+   ],
+   "bytes": 35386
+  },
+  "moss_5": {
+   "size": [
+    310,
+    160
+   ],
+   "bytes": 15874
+  },
+  "moss_6": {
+   "size": [
+    443,
+    160
+   ],
+   "bytes": 23956
+  }
+ },
+ "total_bytes": 516838
+}

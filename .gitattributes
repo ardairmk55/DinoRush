@@ -1,0 +1,6 @@
+# Metin dosyaları depoda LF satır sonuyla tutulur (Windows/macOS/Linux arasında tutarlı)
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.ico binary
+*.webp binary

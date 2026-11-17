@@ -1,0 +1,18 @@
+{
+  "name": "DinoRush",
+  "short_name": "DinoRush",
+  "description": "Terk edilmiş dinozor parkında koş, fosil topla, rekorunu kır.",
+  "lang": "tr",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#07161c",
+  "theme_color": "#07161c",
+  "categories": ["games"],
+  "icons": [
+    { "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

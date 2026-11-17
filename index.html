@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#07161c">
+  <meta name="description" content="DinoRush: terk edilmiş dinozor parkında kendi rekorunu kır.">
+  <title>DinoRush — Kaçış başladı</title>
+  <meta name="application-name" content="DinoRush">
+  <meta name="apple-mobile-web-app-title" content="DinoRush">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="color-scheme" content="dark">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="tr_TR">
+  <meta property="og:title" content="DinoRush — Kaçış başladı">
+  <meta property="og:description" content="Terk edilmiş dinozor parkında koş, fosil topla, rekorunu kır. Tarayıcıda, kurulum gerektirmeden.">
+  <meta property="og:image" content="assets/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preload" as="image" href="assets/ui/btn_primary.png">
+  <link rel="preload" as="image" href="assets/ui/btn_secondary.png">
+  <link rel="preload" as="image" href="assets/ui/panel_frame.png">
+  <link rel="preload" as="image" href="assets/ui/card_frame.png">
+  <link rel="preload" as="image" href="assets/ui/plate_record.png">
+  <link rel="preload" as="image" href="assets/ui/pill_counter.png">
+  <link rel="preload" as="image" href="assets/ui/plank_tagline.png">
+  <link rel="preload" as="image" href="assets/ui/moss_1.png">
+  <link rel="preload" as="image" href="assets/ui/moss_5.png">
+  <link rel="preload" as="image" href="assets/ui/icon_ammonite.png">
+  <link rel="preload" as="image" href="assets/ui/icon_trophy.png">
+  <link rel="preload" as="image" href="assets/ui/icon_gear.png">
+  <link rel="preload" as="image" href="assets/ui/icon_play.png">
+  <script defer src="js/pwa.js"></script>
+  <script defer src="assets/manifest.js"></script>
+  <script defer src="js/ui-skin.js"></script>
+  <script defer src="js/config.js"></script>
+  <script defer src="js/save-core.js"></script>
+  <script defer src="js/storage.js"></script>
+  <script defer src="js/audio.js"></script>
+  <script defer src="js/assets.js"></script>
+  <script defer src="js/rules.js"></script>
+  <script defer src="js/entities.js"></script>
+  <script defer src="js/scene.js"></script>
+  <script defer src="js/input.js"></script>
+  <script defer src="game.js"></script>
+  <script defer src="js/panels.js"></script>
+  <script defer src="js/ui.js"></script>
+</head>
+<body>
+  <noscript><p class="noscript">DinoRush'ı oynamak için tarayıcınızda JavaScript'i etkinleştirin.</p></noscript>
+  <svg class="svg-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="m8 5 12 7-12 7z" fill="currentColor" stroke="currentColor" stroke-linejoin="round"/></symbol>
+    <symbol id="i-sound" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4zM15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></symbol>
+    <symbol id="i-mute" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4zM16 9l5 6m0-6-5 6"/></symbol>
+    <symbol id="i-full" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m13-5h3a2 2 0 0 1 2 2v3M3 16v3a2 2 0 0 0 2 2h3m13-5v3a2 2 0 0 1-2 2h-3"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14" stroke-width="3"/></symbol>
+    <symbol id="i-resume" viewBox="0 0 24 24"><path d="m8 5 12 7-12 7z" fill="currentColor" stroke="currentColor"/></symbol>
+    <symbol id="i-restart" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 2.6-6.4L3 8m0-5v5h5"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m18 6-12 12M6 6l12 12"/></symbol>
+    <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M8 21h8m-4-4v4m-6-18h12v5a6 6 0 0 1-12 0zm0 3H3v2a4 4 0 0 0 4 4m10-6h4v2a4 4 0 0 1-4 4"/></symbol>
+    <symbol id="i-fossil" viewBox="0 0 24 24"><path d="M12 2 21 7v10l-9 5-9-5V7zm0 5v10m-4-8 8 6m0-6-8 6"/></symbol>
+    <symbol id="i-box" viewBox="0 0 24 24"><path d="m12 3 9 5v9l-9 5-9-5V8zm0 9 9-4M12 12 3 8m9 4v10"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm0-5v2m0 14v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M3 12h2m14 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-8h.01"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><path d="M6 11h12v10H6zM8.5 11V8a3.5 3.5 0 0 1 7 0v3M12 15v2"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M19 12H5m6-6-6 6 6 6"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="m12 3 1.8 6.2L20 11l-6.2 1.8L12 19l-1.8-6.2L4 11l6.2-1.8zM19 14l1 3 3 1-3 1-1 3-1-3-3-1 3-1z"/></symbol>
+  </svg>
+
+  <div class="preloader" id="preloader" aria-label="Oyun yükleniyor">
+    <div class="loader-mark"><span>D</span><i></i></div><div class="loader-title">DINO<span>RUSH</span></div>
+    <div class="loader-track"><div id="loaderBar"></div></div><p id="loaderText">PARK SİSTEMİ UYANDIRILIYOR</p>
+  </div>
+  <main class="game-app" id="gameApp" data-mode="menu" aria-label="DinoRush oyunu">
+    <canvas id="gameCanvas" aria-label="Piksel sanat oyun sahnesi"></canvas>
+    <div class="scene-vignette" aria-hidden="true"></div>
+    <div class="dust-glow" aria-hidden="true"></div>
+    <div class="scanline-overlay" aria-hidden="true"></div>
+
+    <div class="utility-rail">
+      <button class="metal-icon" id="soundButton" type="button" aria-label="Sesi kapat" title="Ses"><svg><use href="#i-sound"/></svg></button>
+      <button class="metal-icon" id="fullscreenButton" type="button" aria-label="Tam ekran" title="Tam ekran"><svg><use href="#i-full"/></svg></button>
+    </div>
+
+    <section class="menu-layer" id="menuLayer" aria-label="Ana menü">
+      <div class="menu-fossil-plaque ui-pill-box" id="fossilPlaque" aria-label="Fosil bakiyesi"><svg class="pill-icon" aria-hidden="true"><use href="#i-fossil"/></svg><span>Fosillerim</span><strong id="menuFossils">0</strong></div>
+      <div class="menu-stack">
+        <div class="logo-lockup" id="logoLockup">
+          <div class="fern fern-left" aria-hidden="true"><svg viewBox="0 0 80 100"><path d="M5 94Q38 52 72 5M25 69Q9 48 8 38Q24 42 31 60M37 54Q19 34 22 23Q39 28 44 46M51 35Q39 17 44 7Q57 15 59 27M38 59Q56 58 66 45Q51 41 42 51M52 40Q69 40 78 28Q65 26 55 34"/></svg></div>
+          <h1 class="sr-only">DinoRush</h1><img class="logo-art" src="assets/logo.png" alt="DinoRush" draggable="false">
+          <div class="logo-caption" id="logoCaption">KOŞ <i>◆</i> TOPLA <i>◆</i> GELİŞTİR</div>
+          <div class="fern fern-right" aria-hidden="true"><svg viewBox="0 0 80 100"><path d="M5 94Q38 52 72 5M25 69Q9 48 8 38Q24 42 31 60M37 54Q19 34 22 23Q39 28 44 46M51 35Q39 17 44 7Q57 15 59 27M38 59Q56 58 66 45Q51 41 42 51M52 40Q69 40 78 28Q65 26 55 34"/></svg></div>
+        </div>
+        <div class="record-plaque" id="recordPlaque" aria-label="Kişisel rekor">
+          <span class="plaque-bolt bolt-one"></span><span class="plaque-bolt bolt-two"></span>
+          <span class="plaque-hazard top"></span><span class="plaque-label"><svg><use href="#i-trophy"/></svg> KİŞİSEL REKOR</span>
+          <strong id="menuRecord">000000</strong><span class="plaque-hazard bottom"></span>
+        </div>
+          <button class="amber-button relative flex items-center justify-center gap-4 transition duration-200" id="playButton" type="button"><span class="button-glint"></span><svg><use href="#i-play"/></svg><span>OYNA</span><svg class="button-fossil"><use href="#i-fossil"/></svg></button>
+        <div class="secondary-actions">
+          <button class="metal-button flex items-center justify-center gap-3 transition duration-200" id="collectionButton" type="button" aria-label="Mağazayı aç"><svg><use href="#i-fossil"/></svg><span>MAĞAZA</span><b id="ownedCount" class="sr-only">01/04</b></button>
+          <button class="metal-button flex items-center justify-center gap-3 transition duration-200" id="settingsButton" type="button"><svg><use href="#i-settings"/></svg><span>AYARLAR</span></button>
+        </div>
+        <div class="menu-divider" aria-hidden="true"><i></i><b></b><i></i></div>
+      </div>
+    </section>
+
+    <section class="hud-layer" id="hudLayer" aria-label="Oyun bilgileri" aria-live="polite">
+      <div class="hud-left">
+        <div class="hud-plaque score-plaque hud-score"><span>SKOR</span><strong id="scoreValue">000000</strong></div>
+        <div class="hud-plaque record-hud hud-record"><svg aria-hidden="true"><use href="#i-trophy"/></svg><span>REKOR</span><strong id="hudRecord">000000</strong></div>
+      </div>
+      <div class="hud-right"><div class="hud-plaque fossil-hud ui-pill-box"><svg class="pill-icon" aria-hidden="true"><use href="#i-fossil"/></svg><span>FOSİL</span><strong id="runFossils">00</strong></div><button class="metal-icon pause-button hud-square" id="pauseButton" type="button" aria-label="Oyunu duraklat"><svg aria-hidden="true"><use href="#i-pause"/></svg></button></div>
+    </section>
+    <div class="countdown" id="countdown" aria-live="assertive" aria-hidden="true"><span id="countdownValue">3</span></div>
+    <div class="record-flash" id="recordFlash"><svg><use href="#i-spark"/></svg> YENİ REKOR</div>
+
+    <div class="touch-hint" id="touchHint" aria-hidden="true"><span><b>Ekrana dokun</b> zıpla</span><span><b>EĞİL</b> düğmesini basılı tut</span></div>
+    <div class="touch-zones" id="touchZones" aria-label="Dokunmatik kontroller">
+      <button class="touch-zone crouch-zone" id="crouchButton" type="button" aria-label="Eğil"><span class="touch-arrow">↓</span><small>EĞİL</small></button>
+      <button class="touch-zone jump-zone" id="jumpButton" type="button" aria-label="Zıpla"><span class="touch-arrow">↑</span><small>ZIPLA</small></button>
+    </div>
+
+    <section class="overlay-panel" id="pausePanel" role="dialog" aria-modal="true" aria-labelledby="pauseTitle" hidden>
+      <div class="panel-inner"><div class="panel-kicker"><i></i> GÜVENLİK ODASI</div><h2 id="pauseTitle">DURAKLATILDI</h2><p>Bir nefes al. Park hâlâ tehlikeli.</p><button class="amber-button panel-main" id="resumeButton" type="button"><svg><use href="#i-resume"/></svg><span>DEVAM ET</span></button><button class="metal-button panel-button" id="restartButton" type="button"><svg><use href="#i-restart"/></svg><span>YENİDEN BAŞLA</span></button><div class="pause-links"><button class="metal-button panel-button" type="button" data-return-menu><svg aria-hidden="true"><use href="#i-back"/></svg><span>ANA MENÜ</span></button><button class="metal-button panel-button" type="button" id="pauseSettings"><svg aria-hidden="true"><use href="#i-settings"/></svg><span>AYARLAR</span></button></div></div>
+    </section>
+    <section class="overlay-panel" id="gameOverPanel" role="dialog" aria-modal="true" aria-labelledby="gameOverTitle" hidden>
+      <div class="panel-inner"><div class="panel-kicker danger"><i></i> KOŞU SONU</div><div class="new-record-badge" id="newRecordBadge" hidden>YENİ REKOR</div><h2 id="gameOverTitle">YAKALANDIN</h2><p id="gameOverMessage">Bir dahaki sefere daha uzağa kaç.</p><div class="results-plaque"><div><span>BU KOŞU</span><b id="finalScore">000000</b></div><div><span>REKOR</span><b id="finalRecord">000000</b></div><div><span>KAZANILAN FOSİL</span><b id="finalFossils">00</b></div></div><p class="record-gap" id="recordGap"></p><button class="amber-button panel-main" id="retryButton" type="button" disabled><svg><use href="#i-restart"/></svg><span>TEKRAR OYNA</span></button><div class="game-over-actions"><button class="metal-button panel-button" type="button" data-return-menu><svg aria-hidden="true"><use href="#i-back"/></svg><span>ANA MENÜ</span></button><button class="metal-button panel-button" type="button" id="gameOverShop"><svg aria-hidden="true"><use href="#i-fossil"/></svg><span>MAĞAZA</span></button></div></div>
+    </section>
+
+    <section class="modal-shell" id="collectionModal" role="dialog" aria-modal="true" aria-labelledby="collectionTitle" hidden>
+      <div class="modal-plaque shop-plaque">
+        <button class="close-metal" type="button" data-close-modal aria-label="Kapat"><svg><use href="#i-close"/></svg></button>
+        <div class="panel-kicker"><i></i> KAZI ARŞİVİ</div>
+        <h2 id="collectionTitle">MAĞAZA</h2>
+        <div class="collection-wallet ui-pill-box" id="collectionWalletBox"><svg class="pill-icon" aria-hidden="true"><use href="#i-fossil"/></svg><span>FOSİL BAKİYESİ</span><b id="collectionWallet">0</b></div>
+        <div class="ui-tabs" id="shopTabs" role="tablist" aria-label="Mağaza bölümleri">
+          <button class="ui-tab selected" type="button" role="tab" id="shopTab-skin" data-kind="skin" aria-controls="shopGrid" aria-selected="true">GÖRÜNÜMLER</button>
+          <button class="ui-tab" type="button" role="tab" id="shopTab-trail" data-kind="trail" aria-controls="shopGrid" aria-selected="false" tabindex="-1">İZLER</button>
+          <button class="ui-tab" type="button" role="tab" id="shopTab-scene" data-kind="scene" aria-controls="shopGrid" aria-selected="false" tabindex="-1">SAHNE</button>
+        </div>
+        <div class="shop-grid" id="shopGrid" role="tabpanel" aria-labelledby="shopTab-skin"></div>
+        <p class="shop-status" id="shopStatus" role="status" aria-live="polite"></p>
+        <p class="fine-print">Mağazadaki her şey yalnızca görünüştür; hızı, zıplamayı veya skoru değiştirmez.</p>
+      </div>
+      <div class="ui-confirm" id="shopConfirm" role="alertdialog" aria-modal="true" aria-labelledby="shopConfirmTitle" aria-describedby="shopConfirmText" hidden>
+        <div class="ui-confirm-box">
+          <h3 id="shopConfirmTitle">SATIN ALINSIN MI?</h3>
+          <p id="shopConfirmText"><b id="shopConfirmName"></b> için <span class="cost-inline"><svg class="ammonite" aria-hidden="true"><use href="#i-fossil"/></svg><b id="shopConfirmCost">0</b> fosil</span> harcanacak. Kalan bakiye: <b id="shopConfirmAfter">0</b>.</p>
+          <div class="ui-confirm-actions"><button class="ui-btn ui-btn--secondary" type="button" id="shopConfirmCancel">VAZGEÇ</button><button class="ui-btn ui-btn--primary" type="button" id="shopConfirmOk">ONAYLA</button></div>
+        </div>
+      </div>
+    </section>
+    <section class="modal-shell" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" hidden>
+      <div class="modal-plaque settings-plaque">
+        <button class="close-metal" type="button" data-close-modal aria-label="Kapat"><svg><use href="#i-close"/></svg></button>
+        <div class="panel-kicker"><i></i> PARK KONTROLLERİ</div>
+        <h2 id="settingsTitle">AYARLAR</h2>
+        <div class="ui-tabs" id="settingsTabs" role="tablist" aria-label="Ayar bölümleri">
+          <button class="ui-tab selected" type="button" role="tab" id="setTab-audio" aria-controls="set-audio" aria-selected="true">SES</button>
+          <button class="ui-tab" type="button" role="tab" id="setTab-display" aria-controls="set-display" aria-selected="false" tabindex="-1">GÖRÜNTÜ</button>
+          <button class="ui-tab" type="button" role="tab" id="setTab-controls" aria-controls="set-controls" aria-selected="false" tabindex="-1">KONTROLLER</button>
+          <button class="ui-tab" type="button" role="tab" id="setTab-data" aria-controls="set-data" aria-selected="false" tabindex="-1">VERİ</button>
+        </div>
+
+        <div class="settings-content" id="set-audio" role="tabpanel" aria-labelledby="setTab-audio" data-settings-panel>
+          <div class="setting-row"><div><b id="lblMaster">ANA SES</b><small>Oyundaki tüm seslerin düzeyi</small></div><div class="ui-slider"><input type="range" min="0" max="100" step="5" data-range="masterVolume" aria-labelledby="lblMaster"><output>%80</output></div></div>
+          <div class="setting-row"><div><b id="lblSfx">EFEKT SESİ</b><small>Zıplama, fosil ve çarpma sesleri</small></div><div class="ui-slider"><input type="range" min="0" max="100" step="5" data-range="sfxVolume" aria-labelledby="lblSfx"><output>%80</output></div></div>
+          <div class="setting-row"><div><b id="lblMute">SESSİZ</b><small>Tüm sesleri kapat</small></div><button class="toggle-button" type="button" data-setting="mute" role="switch" aria-checked="false" aria-labelledby="lblMute"><i></i></button></div>
+          <p class="settings-note" id="muteNote" hidden>Sessiz mod açık; kaydırıcıları değiştirmek ses çalmaz.</p>
+        </div>
+
+        <div class="settings-content" id="set-display" role="tabpanel" aria-labelledby="setTab-display" data-settings-panel hidden>
+          <p class="settings-note" id="motionNote" hidden>Cihazında “hareketi azalt” açık. Ekran sarsıntısı ve çarpma flaşı bu yüzden kapalı başlatıldı; istersen açabilirsin.</p>
+          <div class="setting-row"><div><b id="lblLow">DÜŞÜK EFEKT MODU</b><small>Parıltı, sis ve parçacıkları azalt</small></div><button class="toggle-button" type="button" data-setting="lowEffects" role="switch" aria-checked="false" aria-labelledby="lblLow"><i></i></button></div>
+          <div class="setting-row"><div><b id="lblShake">EKRAN SARSINTISI</b><small>Çarpınca kısa sarsıntı</small></div><button class="toggle-button" type="button" data-setting="screenShake" role="switch" aria-checked="true" aria-labelledby="lblShake"><i></i></button></div>
+          <div class="setting-row"><div><b id="lblFlash">ÇARPMA FLAŞI</b><small>Çarpınca kısa parlama</small></div><button class="toggle-button" type="button" data-setting="flash" role="switch" aria-checked="true" aria-labelledby="lblFlash"><i></i></button></div>
+          <div class="setting-row"><div><b id="lblVib">TİTREŞİM</b><small id="vibrationNote">Destekleyen telefonlarda kısa titreşim.</small></div><button class="toggle-button" type="button" data-setting="vibration" role="switch" aria-checked="false" aria-labelledby="lblVib" aria-describedby="vibrationNote"><i></i></button></div>
+          <div class="setting-row"><div><b id="lblScan">TARAMA ÇİZGİLERİ</b><small>Hafif eski ekran dokusu</small></div><button class="toggle-button" type="button" data-setting="scanlines" role="switch" aria-checked="false" aria-labelledby="lblScan"><i></i></button></div>
+          <div class="setting-row"><div><b>TAM EKRAN</b><small>Oyunu tüm ekrana yay</small></div><button class="ui-btn ui-btn--secondary ui-btn--small" type="button" id="fullscreenSetting"><svg aria-hidden="true"><use href="#i-full"/></svg><span>TAM EKRAN</span></button></div>
+        </div>
+
+        <div class="settings-content" id="set-controls" role="tabpanel" aria-labelledby="setTab-controls" data-settings-panel hidden>
+          <div class="control-row"><div class="keycaps"><kbd class="ui-keycap wide">SPACE</kbd><kbd class="ui-keycap">↑</kbd></div><span><b>ZIPLA</b> Basılı tutarsan daha yükseğe çıkarsın. W tuşu da çalışır.</span></div>
+          <div class="control-row"><div class="keycaps"><kbd class="ui-keycap">↓</kbd><kbd class="ui-keycap">S</kbd></div><span><b>EĞİL</b> Alçaktan dalan pterosaurun altından sıyrıl.</span></div>
+          <div class="control-row"><div class="keycaps"><kbd class="ui-keycap">P</kbd><kbd class="ui-keycap wide">ESC</kbd></div><span><b>DURAKLAT</b> Koşuyu durdur veya devam ettir.</span></div>
+          <div class="touch-scheme" aria-label="Dokunmatik kontrol şeması">
+            <div class="touch-screen">
+              <div class="touch-area crouch"><span class="touch-arrow" aria-hidden="true">↓</span><b>EĞİL</b><small>Sol alt bölgeyi basılı tut</small></div>
+              <div class="touch-area jump"><span class="touch-arrow" aria-hidden="true">↑</span><b>ZIPLA</b><small>Sağ alt bölgeye dokun</small></div>
+            </div>
+            <p>Dokunmatik ekranda oyun alanının herhangi bir yerine dokunmak da zıplatır.</p>
+          </div>
+        </div>
+
+        <div class="settings-content" id="set-data" role="tabpanel" aria-labelledby="setTab-data" data-settings-panel hidden>
+          <dl class="data-list">
+            <div><dt>SÜRÜM</dt><dd id="dataVersion">-</dd></div>
+            <div><dt>TOPLAM OYNAMA SÜRESİ</dt><dd id="dataPlayTime">0 sn</dd></div>
+            <div><dt>EN YÜKSEK SKOR</dt><dd id="dataBest">0</dd></div>
+          </dl>
+          <div class="danger-zone">
+            <div><b>İLERLEMEYİ SIFIRLA</b><small id="resetHint">Rekor, fosiller, satın alımlar ve oynama süresi silinir; ayarların korunur. Onay için düğmeyi 2 saniye basılı tut.</small></div>
+            <button class="hold-button" type="button" id="resetHold" aria-describedby="resetHint"><svg class="hold-ring" viewBox="0 0 36 36" aria-hidden="true"><circle class="ring-track" cx="18" cy="18" r="15"/><circle class="ring-fill" id="resetRing" cx="18" cy="18" r="15" pathLength="100"/></svg><span>BASILI TUT</span></button>
+            <div class="ui-confirm-inline" id="resetConfirm" role="alertdialog" aria-labelledby="resetWarnTitle" aria-describedby="resetWarnText" hidden>
+              <b id="resetWarnTitle">SON UYARI</b>
+              <p id="resetWarnText">Bu işlem geri alınamaz. Rekorun, fosil bakiyen ve satın aldığın tüm görünümler silinecek.</p>
+              <div class="ui-confirm-actions"><button class="ui-btn ui-btn--secondary" type="button" id="resetCancel">VAZGEÇ</button><button class="ui-btn ui-btn--danger" type="button" id="resetConfirmOk">EVET, SIFIRLA</button></div>
+            </div>
+            <p class="settings-note ok" id="resetDone" role="status" hidden>İlerleme sıfırlandı.</p>
+          </div>
+        </div>
+        <button class="metal-button modal-done" type="button" data-close-modal><svg aria-hidden="true"><use href="#i-check"/></svg><span>TAMAM</span></button>
+      </div>
+    </section>
+    <div class="sr-only" id="announcement" aria-live="polite"></div>
+  </main>
+</body>
+</html>
+
+
+
+

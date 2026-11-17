@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Sayfa bulunamadı — DinoRush</title>
+  <link rel="icon" href="data:,">
+  <style>
+    html,body{height:100%;margin:0;background:#07161c;color:#fff2ce;font:16px/1.5 system-ui,"Segoe UI",Arial,sans-serif}
+    main{min-height:100%;display:grid;place-items:center;padding:24px;box-sizing:border-box;text-align:center}
+    h1{margin:0 0 8px;color:#ffd36b;font:900 clamp(28px,7vw,48px)/1.1 Impact,"Arial Black",sans-serif;letter-spacing:.02em}
+    p{margin:0 0 20px;color:#d3c9b3}
+    a{display:inline-block;padding:14px 26px;background:linear-gradient(#ffd36b,#f39a1e);color:#2a1405;font-weight:900;letter-spacing:.08em;text-decoration:none;border:2px solid #fff0ad}
+    a:focus-visible{outline:3px solid #7fffe8;outline-offset:3px}
+  </style>
+</head>
+<body>
+  <main>
+    <div>
+      <h1>Bu patika kayıp</h1>
+      <p>Aradığın sayfa parkta bulunamadı.</p>
+      <a id="home" href="/">OYUNA DÖN</a>
+    </div>
+  </main>
+  <script>
+    // GitHub Pages proje sitesi (kullanici.github.io/depo/): 404 her derinlikte gösterilir; oyun köküne dön.
+    (function(){var h=location.hostname,seg=location.pathname.split("/").filter(Boolean)[0];
+      if(/\.github\.io$/.test(h)&&seg){document.getElementById("home").href="/"+seg+"/";}})();
+  </script>
+</body>
+</html>

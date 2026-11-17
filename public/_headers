@@ -1,0 +1,12 @@
+# Netlify / Cloudflare Pages başlıkları. Başka barındırmada aynı başlıkları sunucu ayarına ekleyin.
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'none'
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
+/sw.js
+  Cache-Control: no-cache
+/index.html
+  Cache-Control: no-cache
+/assets/*
+  Cache-Control: public, max-age=604800
