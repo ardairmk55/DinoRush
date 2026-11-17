@@ -549,3 +549,4 @@ html.png-btn-primary #gameApp #playButton>svg:not(.button-fossil){color:#2a1405;
   #gameApp[data-mode=menu] #playButton{--pi:calc(var(--bh) * .42)}
 }
 #gameApp .ui-pill-box .pill-icon{grid-area:auto}
+@media(orientation:portrait){.touch-hint{top:21%}}

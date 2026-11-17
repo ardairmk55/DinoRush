@@ -78,10 +78,9 @@ self.addEventListener("fetch", e => {
 
 def main():
     files = collect()
-    # Klasörün kendisini değil içeriğini temizle (açık bir sunucu/gezgin klasörü tutuyor olabilir).
+    # Klasörleri silmeden dosyaların üstüne yazılır; sonra pakette olmaması gereken eski dosyalar temizlenir.
+    # (OneDrive veya açık bir sunucu klasörü kilitleyebilir; tümden silmek Windows'ta "Erişim engellendi" verir.)
     DIST.mkdir(exist_ok=True)
-    for child in DIST.iterdir():
-        shutil.rmtree(child) if child.is_dir() else child.unlink()
     for f in files:
         dst = DIST / f
         dst.parent.mkdir(parents=True, exist_ok=True)
@@ -102,7 +101,19 @@ def main():
     version = re.search(r'version:"([^"]+)"', text("js/config.js")).group(1)
     cache = f"dinorush-{version}-{h.hexdigest()[:10]}"
     (DIST / "sw.js").write_text(SW_TEMPLATE % {"cache": cache, "assets": json.dumps(precache, ensure_ascii=False, indent=1)}, encoding="utf8")
-    total = sum(p.stat().st_size for p in DIST.rglob("*") if p.is_file())
+    keep = set(files) | {p.name for p in PUBLIC.iterdir()} | {"sw.js"}
+    stale = [p for p in DIST.rglob("*") if p.is_file() and p.relative_to(DIST).as_posix() not in keep]
+    for p in stale:
+        try:
+            p.unlink()
+        except OSError:
+            print(f"uyarı: silinemedi (kilitli olabilir): {p.relative_to(DIST).as_posix()}")
+    for d in sorted((p for p in DIST.rglob("*") if p.is_dir()), key=lambda p: len(p.parts), reverse=True):
+        try:
+            d.rmdir()  # yalnız boşsa siler
+        except OSError:
+            pass
+    total =sum(p.stat().st_size for p in DIST.rglob("*") if p.is_file())
     count = sum(1 for p in DIST.rglob("*") if p.is_file())
     print(f"dist/: {count} dosya, {total / 1024:.0f} KB, önbellek {cache}")
 

@@ -1,17 +1,25 @@
 (function(w){
   "use strict";
   const DR=w.DinoRush,C=DR.Config,scene={canvas:null,ctx:null,scale:1,dpr:1,quality:1,slowFrames:0,fastFrames:0,width:640,height:360,ground:246,cache:null,cacheCtx:null,cacheDirty:true,elapsed:0,fireflies:[],lastWidth:0,lastHeight:0,reducedMotion:false,shakeX:0,shakeY:0};
+  // Zemin yüksekliği. Dikey ekranda oyun sırasında zemin yukarı alınır (başparmak dinoyu kapatmasın);
+  // altında dokunma düğmeleri için en az portraitTouchReserve CSS pikseli kalır. Menüde ve yatayda değişmez.
+  function groundFor(){
+    if(!(scene.portrait&&scene.farPlay))return scene.height*C.viewport.groundRatio;
+    return Math.min(scene.height*C.viewport.portraitGroundRatio,scene.height-C.viewport.portraitTouchReserve/scene.scale);
+  }
   function resize(){
     if(!scene.canvas)return;
     const box=scene.canvas.getBoundingClientRect(),cssW=Math.max(1,box.width),cssH=Math.max(1,box.height);
     const low=DR.Storage.get().lowEffects,device=Number(navigator.deviceMemory)||8;
-    const cap=device<4?1.75:C.viewport.dprMax;
+    // Dokunmatik cihazlarda tuval yoğunluğu 2x ile sınırlı: 3x telefonda boyanan piksel ~%55 azalır, görsel fark yok denecek kadar az.
+    let coarse=false;try{coarse=!!(window.matchMedia&&window.matchMedia("(pointer: coarse)").matches);}catch(_){}
+    const cap=device<4?1.75:(coarse?C.viewport.dprMaxTouch:C.viewport.dprMax);
     scene.dpr=Math.max(1,Math.min(cap,window.devicePixelRatio||1,low?2:C.viewport.dprMax)*scene.quality);
     // Dikey ekran: görünür dünya daha dar (yakınlaştırma) ve çizimde kamera sola kayar.
     // Yalnız görüntüdür; fizik, çarpışma ve engel aralıkları aynı kalır. Engeller görünür kenarın dışında doğar.
     scene.portrait=cssH>cssW*1.05;scene.shift=scene.portrait?C.viewport.portraitShift:0;
     scene.scale=Math.min(cssW/(scene.portrait?C.viewport.portraitWidth:C.viewport.minWidth),cssH/C.viewport.baseHeight);
-    scene.width=cssW/scene.scale;scene.height=cssH/scene.scale;scene.ground=scene.height*C.viewport.groundRatio;
+    scene.width=cssW/scene.scale;scene.height=cssH/scene.scale;scene.ground=groundFor();
     const pw=Math.round(cssW*scene.dpr),ph=Math.round(cssH*scene.dpr);
     if(scene.canvas.width!==pw||scene.canvas.height!==ph){scene.canvas.width=pw;scene.canvas.height=ph;}
     scene.ctx=scene.canvas.getContext("2d",{alpha:false,desynchronized:true});scene.ctx.setTransform(scene.dpr*scene.scale,0,0,scene.dpr*scene.scale,0,0);scene.ctx.imageSmoothingEnabled=false;
@@ -199,7 +207,7 @@
     else if(p.kind==="trail-firefly"){const pulse=.55+.45*Math.sin((p.max-p.life)*14+p.seed);c.globalAlpha=a*.3*pulse;px(c,p.x-2,p.y-2,6,6,p.color);c.globalAlpha=Math.min(1,a*1.3)*pulse;px(c,p.x,p.y,2,2,"#fbffd8");}
     else{c.globalAlpha=a;px(c,p.x,p.y,p.size,p.size,p.color);}
     c.globalAlpha=1;}
-  function render(model){if(!scene.ctx)return;const play=model.mode!=="menu";if(scene.portrait&&play!==scene.farPlay){scene.farPlay=play;scene.cacheDirty=true;}const c=scene.ctx,t=model.elapsed||0,camera=model.world||0,prefs=DR.Storage.get(),shakeOn=prefs.screenShake&&!prefs.lowEffects,flash=model.mode==="game_over"&&prefs.flash&&!prefs.lowEffects&&model.deathElapsed<2*C.physics.step;scene.shakeX=model.mode==="game_over"&&shakeOn&&model.deathElapsed<.09?(rnd(Math.floor(model.deathElapsed*60)+51)-.5)*2.2:0;scene.shakeY=model.mode==="game_over"&&shakeOn&&model.deathElapsed<.09?(rnd(Math.floor(model.deathElapsed*60)+61)-.5)*1.4:0;const worldDrift=model.mode==="menu"?t*18:camera;drawBackground(t,camera,model.mode==="menu",model.score);drawForeground(worldDrift,model.mode==="menu");
+  function render(model){if(!scene.ctx)return;const play=model.mode!=="menu";if(scene.portrait&&play!==scene.farPlay){scene.farPlay=play;scene.ground=groundFor();scene.cacheDirty=true;if(DR.Game&&DR.Game.onResize)DR.Game.onResize(scene.width,scene.height,scene.ground);}const c=scene.ctx,t=model.elapsed||0,camera=model.world||0,prefs=DR.Storage.get(),shakeOn=prefs.screenShake&&!prefs.lowEffects,flash=model.mode==="game_over"&&prefs.flash&&!prefs.lowEffects&&model.deathElapsed<2*C.physics.step;scene.shakeX=model.mode==="game_over"&&shakeOn&&model.deathElapsed<.09?(rnd(Math.floor(model.deathElapsed*60)+51)-.5)*2.2:0;scene.shakeY=model.mode==="game_over"&&shakeOn&&model.deathElapsed<.09?(rnd(Math.floor(model.deathElapsed*60)+61)-.5)*1.4:0;const worldDrift=model.mode==="menu"?t*18:camera;drawBackground(t,camera,model.mode==="menu",model.score);drawForeground(worldDrift,model.mode==="menu");
     if(model.mode==="menu"){drawDino(scene.width*.075,scene.ground,t,"idle",DR.Storage.get().selected,true,null,model.mode,0,scene.ground);drawFossil(scene.width*.885,scene.ground-30,t,Math.sin(t*2)*.5,0,54);applyGrade(c,null,-8,-8,scene.width+16,scene.height+16);return;}
     c.save();c.translate(-(scene.shift||0),0);
     model.pickups.forEach(f=>{if(!f.taken)drawFossil(f.x,f.y,t,0,f.phase);});model.obstacles.forEach(o=>drawObstacle(o,t));drawPteroWarnings(model.obstacles,t);

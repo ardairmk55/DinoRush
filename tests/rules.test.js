@@ -32,7 +32,7 @@ function run(lane, speed, action) {
   const o = pterosaur(lane, P.playerX + 420);
   for (let t = 0; t < 4; t += DT) {
     if (action && action.jumpAt !== undefined && Math.abs(t - action.jumpAt) < DT / 2 && p.y >= GROUND - 1) {
-      p.prep = 0.065; p.held = !!action.hold; p.hold = 0;
+      p.prep = P.jumpPrep; p.held = !!action.hold; p.hold = 0;
     }
     if (p.prep > 0) { p.prep -= DT; if (p.prep <= 0) p.vy = P.jumpVelocity; }
     else if (p.y < GROUND || p.vy < 0) {
@@ -92,6 +92,12 @@ test("alçak şerit eğilmiş dinoya da çarpar (eğilerek kaçılamaz, karış�
   const o = R.obstacleBox(pterosaur("low", P.playerX), C);
   const duck = R.playerBox({ x: P.playerX, y: GROUND, duck: true }, C);
   assert.ok(o.y + o.h > duck.y + 3);
+});
+
+test("zıplama hazırlık gecikmesi en fazla 2 sabit adım (~33 ms)", () => {
+  let prep = P.jumpPrep, steps = 0;
+  while (prep > 0) { prep -= DT; steps++; }
+  assert.ok(steps <= 2, `${steps} adım`);
 });
 
 test("şerit seçimi skora göre kademeli", () => {

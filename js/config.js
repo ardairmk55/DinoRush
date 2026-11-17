@@ -30,8 +30,8 @@
   DR.Config=Object.freeze({
     version:"1.2.0",
     saveKey:"dinorush-save-v1",
-    viewport:{baseHeight:360,minWidth:640,portraitWidth:440,portraitShift:76,groundRatio:.82,midSink:90,dprMax:3},
-    physics:{step:1/60,maxFrame:.1,runSpeed:335,maxSpeed:450,speedGain:.13,jumpVelocity:-525,jumpHoldGravity:1080,jumpHoldMax:.18,jumpBuffer:.12,coyoteTime:.09,gravity:1520,duckHeight:25,playerWidth:42,playerHeight:49,playerX:120,obstacleMinGap:325,obstacleMaxGap:540},
+    viewport:{baseHeight:360,minWidth:640,portraitWidth:440,portraitShift:76,portraitGroundRatio:.64,portraitTouchReserve:150,groundRatio:.82,midSink:90,dprMax:3,dprMaxTouch:2},
+    physics:{step:1/60,jumpPrep:.03,fastFall:650,maxFrame:.1,runSpeed:335,maxSpeed:450,speedGain:.13,jumpVelocity:-525,jumpHoldGravity:1080,jumpHoldMax:.18,jumpBuffer:.12,coyoteTime:.09,gravity:1520,duckHeight:25,playerWidth:42,playerHeight:49,playerX:120,obstacleMinGap:325,obstacleMaxGap:540},
     dinoSprite:{worldPixel:2,frameWidth:44,frameHeight:36,footRow:34,animations:{idle:{row:0,frames:6,fps:6},run:{row:1,frames:6,fps:14},jump:{row:2,frames:3,fps:1},duck:{row:3,frames:2,fps:10},dead:{row:4,frames:2,fps:4}},hitboxes:{standing:{x:11,y:6,w:25,h:29},duck:{x:9,y:17,w:30,h:18}}},
     // Pterosaur: sabit boyut, iki şerit. lanes = çarpışma kutusu alt kenarının zeminden yüksekliği.
     // low (10): ayakta ve eğilmiş dinoya çarpar -> ZIPLA. high (44): ayakta dinoya çarpar, eğilmiş dinonun (üst kenar 36) üstünden geçer -> EĞİL.
@@ -41,6 +41,6 @@
     skins,
     cosmetics:{skins,trails,scenes},
     settings:{sound:true,vibration:false,lowEffects:false},
-    controls:{jump:["Space","ArrowUp","KeyW"],duck:["ArrowDown","KeyS"],pause:["KeyP","Escape"]}
+    controls:{swipeDuckPx:28,jump:["Space","ArrowUp","KeyW"],duck:["ArrowDown","KeyS"],pause:["KeyP","Escape"]}
   });
 })(window);

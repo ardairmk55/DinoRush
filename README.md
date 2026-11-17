@@ -8,7 +8,7 @@ HTML Canvas ile çizilen, React veya zorunlu dış kütüphane kullanmayan özg�
 - `↓` veya `S`: eğil.
 - `P` veya `Esc`: duraklat/devam et.
 - `H`: yalnız adres `?debug` ile açıldığında çarpışma kutularını göster/gizle (geliştirme).
-- Dokunmatik ekranda oyun sırasında alt köşelerdeki geniş zıpla/eğil bölgelerini kullan.
+- Dokunmatik ekranda: oyun alanına dokun = zıpla; parmağını aşağı kaydır = eğil (havadaysan hızla iner). Alt köşelerdeki ZIPLA/EĞİL düğmeleri de çalışır.
 - Sağ üstteki düğme tam ekranı açar; oyun sırasında yanındaki düğme sesi kapatır/açar.
 - Ses, görüntü, kontrol şeması ve kayıt verileri **AYARLAR** panelindedir (SES, GÖRÜNTÜ, KONTROLLER, VERİ sekmeleri). Duraklat ekranından da açılır.
 

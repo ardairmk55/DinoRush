@@ -28,8 +28,13 @@
   function pause(){if(model.mode!=="playing")return;model.mode="paused";flushPlayTime();DR.UI.showPause(true);}
   function resume(){if(model.mode!=="paused")return;model.mode="playing";DR.UI.showPause(false);last=performance.now();accumulator=0;}
   function togglePause(){if(model.mode==="playing")pause();else if(model.mode==="paused")resume();}
-  function jump(pressed){const p=model.player;if(!pressed){p.jumpHeld=false;return;}if(model.mode!=="playing")return;p.jumpHeld=true;p.jumpBuffer=P.jumpBuffer;if(p.y>=model.ground-1||p.coyote>0){p.prep=.065;p.jumpBuffer=0;p.coyote=0;p.jumpHoldElapsed=0;p.duck=false;DR.Audio.jump();}}
+  function jump(pressed){const p=model.player;if(!pressed){p.jumpHeld=false;return;}if(model.mode!=="playing")return;p.jumpHeld=true;p.jumpBuffer=P.jumpBuffer;if(p.y>=model.ground-1||p.coyote>0){p.prep=P.jumpPrep;p.jumpBuffer=0;p.coyote=0;p.jumpHoldElapsed=0;p.duck=false;DR.Audio.jump();}}
   function setDuck(on){if(model.mode==="playing")model.player.duck=!!on;}
+  // Aşağı kaydırma: yerdeyse bekleyen zıplamayı iptal edip eğilir, havadaysa hızla iner ve eğilir.
+  function swipeDown(){if(model.mode!=="playing")return;const p=model.player;p.jumpHeld=false;p.jumpBuffer=0;
+    if(p.prep>0){p.prep=0;p.pose="crouch";}
+    if(p.y<model.ground-1)p.vy=Math.max(p.vy,P.fastFall);
+    p.duck=true;}
   function resize(width,height,ground){const oldGround=model.ground,delta=ground-oldGround;model.width=width;model.height=height;model.ground=ground;const p=model.player;if((model.mode==="playing"||model.mode==="paused")&&p.y<oldGround-1){p.y+=delta;model.pickups.forEach(f=>f.y+=delta);model.obstacles.forEach(o=>o.y+=delta);}else p.y=ground;if(model.mode==="game_over")model.deathStartY+=delta;}
   function announceScore(){if(model.score===lastScore)return;lastScore=model.score;DR.UI.updateScore(model.score,model.runFossils,DR.Storage.get().best);if(model.score>startBest&&DR.Storage.setBest(model.score)){DR.UI.updateRecord(DR.Storage.get().best,!recordCelebrated);recordCelebrated=true;}}
   function endRun(){if(model.mode!=="playing")return;model.mode="game_over";flushPlayTime();model.player.pose="dead";model.player.duck=false;model.deathElapsed=0;model.deathStartY=model.player.y;model.gameOverShown=false;const isRecord=model.score>startBest;if(isRecord){DR.Storage.setBest(model.score);DR.Audio.record();}else DR.Audio.hit();DR.Audio.haptic(70);model.gameOverResult={score:model.score,best:DR.Storage.get().best,fossils:model.runFossils,record:isRecord};}
@@ -54,7 +59,7 @@
     const speed=Math.min(P.maxSpeed,P.runSpeed+model.score*P.speedGain);model.world+=speed*dt;model.score=Math.floor(model.world/11);announceScore();
     const p=model.player;let previousY=p.y;
     const grounded=p.y>=model.ground-1;if(grounded)p.coyote=P.coyoteTime;else p.coyote=Math.max(0,p.coyote-dt);
-    if(p.jumpBuffer>0){p.jumpBuffer=Math.max(0,p.jumpBuffer-dt);if(grounded||p.coyote>0){p.prep=.065;p.jumpBuffer=0;p.coyote=0;p.jumpHoldElapsed=0;p.duck=false;DR.Audio.jump();}}
+    if(p.jumpBuffer>0){p.jumpBuffer=Math.max(0,p.jumpBuffer-dt);if(grounded||p.coyote>0){p.prep=P.jumpPrep;p.jumpBuffer=0;p.coyote=0;p.jumpHoldElapsed=0;p.duck=false;DR.Audio.jump();}}
     if(p.prep>0){p.prep-=dt;if(p.prep<=0){p.vy=P.jumpVelocity;p.pose="rise";p.jumpHoldElapsed=0;dust(p.x+25,model.ground,6,"#6e9a38","leaf");}}
     else if(p.y<model.ground||p.vy<0){const holding=p.jumpHeld&&p.vy<0&&p.jumpHoldElapsed<P.jumpHoldMax,gravity=holding?P.jumpHoldGravity:P.gravity;p.y+=p.vy*dt;p.vy+=gravity*dt;if(holding)p.jumpHoldElapsed+=dt;if(p.y>=model.ground){p.y=model.ground;p.vy=0;p.jumpHeld=false;p.pose=p.duck?"crouch":"run";p.coyote=P.coyoteTime;if(previousY<model.ground)dust(p.x+25,model.ground,5,"#4f7a2a");}}
     if(p.y<model.ground-1)p.pose=p.vy<0?"rise":"fall";else if(p.prep>0)p.pose="prep";else if(p.duck)p.pose="crouch";else p.pose="run";p.frame+=dt*12;
@@ -75,7 +80,7 @@
     DR.Scene.render(model);}
   function initialize(){return DR.Assets.load().finally(()=>{DR.Scene.prepare(document.getElementById("gameCanvas"));DR.Input.init();if(!raf)raf=w.requestAnimationFrame(frame);});}
   const P_PIXEL=C.artAssets.pixelWorld;
-  DR.Game={flushPlayTime,trailData,get mode(){return model.mode;},get model(){return model;},getPlayerBox,getObstacleBox,toggleHitboxDebug(){model.debugHitbox=!model.debugHitbox;return model.debugHitbox;},initialize,start,jump,setDuck,pause,resume,togglePause,stopToMenu,onResize:resize};
+  DR.Game={flushPlayTime,trailData,get mode(){return model.mode;},get model(){return model;},getPlayerBox,getObstacleBox,toggleHitboxDebug(){model.debugHitbox=!model.debugHitbox;return model.debugHitbox;},initialize,start,jump,setDuck,swipeDown,pause,resume,togglePause,stopToMenu,onResize:resize};
 })(window);
 
 
