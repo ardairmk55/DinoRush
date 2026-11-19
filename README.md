@@ -14,6 +14,7 @@ Tarayıcıda çalışan, özgün piksel sanatlı bir sonsuz koşu oyunu. Kurulum
 ![Bağımlılık yok](https://img.shields.io/badge/ba%C4%9F%C4%B1ml%C4%B1l%C4%B1k-yok-7fffe8)
 ![HTML5 Canvas](https://img.shields.io/badge/HTML5-Canvas-e34f26?logo=html5&logoColor=white)
 ![PWA](https://img.shields.io/badge/PWA-%C3%A7evrimd%C4%B1%C5%9F%C4%B1-5a0fc8?logo=pwa&logoColor=white)
+[![OpenRepos](https://img.shields.io/endpoint?url=https://openrepos.org/status/dinorush.repos.one.json&style=flat-square)](https://dinorush.repos.one/)
 
 [Oyna](https://ardairmk55.github.io/DinoRush/) · [Ekran görüntüleri](#ekran-görüntüleri) · [Özellikler](#öne-çıkanlar) · [Geliştirme](#geliştirme) · [Lisans](#lisans-ve-teşekkür)
 
