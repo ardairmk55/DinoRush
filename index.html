@@ -54,6 +54,7 @@
   <script defer src="js/riko-messages.js"></script>
   <script defer src="js/riko-core.js"></script>
   <script defer src="js/riko.js"></script>
+  <script defer src="js/music.js"></script>
 </head>
 <body>
   <noscript><p class="noscript">DinoRush'ı oynamak için tarayıcınızda JavaScript'i etkinleştirin.</p></noscript>
@@ -176,6 +177,8 @@
         <div class="settings-content" id="set-audio" role="tabpanel" aria-labelledby="setTab-audio" data-settings-panel>
           <div class="setting-row"><div><b id="lblMaster">ANA SES</b><small>Oyundaki tüm seslerin düzeyi</small></div><div class="ui-slider"><input type="range" min="0" max="100" step="5" data-range="masterVolume" aria-labelledby="lblMaster"><output>%80</output></div></div>
           <div class="setting-row"><div><b id="lblSfx">EFEKT SESİ</b><small>Zıplama, fosil ve çarpma sesleri</small></div><div class="ui-slider"><input type="range" min="0" max="100" step="5" data-range="sfxVolume" aria-labelledby="lblSfx"><output>%80</output></div></div>
+          <div class="setting-row"><div><b id="lblMusic">MÜZİK</b><small>Menü ve koşu müziği</small></div><button class="toggle-button" type="button" data-setting="music" role="switch" aria-checked="true" aria-labelledby="lblMusic"><i></i></button></div>
+          <div class="setting-row"><div><b id="lblMusicVol">MÜZİK SESİ</b><small>Arka plan müziğinin düzeyi</small></div><div class="ui-slider"><input type="range" min="0" max="100" step="5" data-range="musicVolume" aria-labelledby="lblMusicVol"><output>%70</output></div></div>
           <div class="setting-row"><div><b id="lblMute">SESSİZ</b><small>Tüm sesleri kapat</small></div><button class="toggle-button" type="button" data-setting="mute" role="switch" aria-checked="false" aria-labelledby="lblMute"><i></i></button></div>
           <p class="settings-note" id="muteNote" hidden>Sessiz mod açık; kaydırıcıları değiştirmek ses çalmaz.</p>
         </div>

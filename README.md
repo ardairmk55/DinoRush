@@ -46,6 +46,7 @@ node --test tests/save.test.js tests/rules.test.js tests/riko.test.js
 - `js/save-core.js` — saf kayıt/migrasyon/satın alma mantığı (Node testleri bunu kullanır).
 - `js/storage.js`, `js/audio.js`, `js/ui.js` — güvenli yerel kayıt, Web Audio/titreşim, ekranlar.
 - `js/riko-messages.js`, `js/riko-core.js`, `js/riko.js` — Riko konuşma sistemi (aşağıya bakın).
+- `js/music.js`, `assets/audio/` — arka plan müziği (aşağıya bakın).
 - `js/panels.js` — mağaza (sekmeler, kart durumları, onay, önizlemeler) ve ayarlar paneli.
 - `tools/make_dino_variants.py`, `tests/save.test.js` — varyant üretimi ve birim testleri.
 - `assets/dino/dino_sheet.png` — 44×36 hücreli, beş animasyon satırlı dinozor sprite sayfası.
@@ -69,6 +70,16 @@ Menüdeki dino (Riko) 60 sabit mesajla konuşur. Mesaj metinleri `js/riko-messag
 - Duraklatınca ve sekme gizlenince balon kapanır. Hareketsizlik mesajı 50–60 sn sonra gelir.
 - Konuşma hareketleri var olan sprite satırlarıyla yapılır: nefes, zıplama, eğilme. `prefers-reduced-motion` açıkken kapanır.
 - Geçmiş `localStorage` içinde `dinorush-riko-v1` anahtarıyla tutulur: `recentMessages`, `lastMessageId`, `firstVisit`, `lastSeen`. Kayıt bozuksa varsayılana döner.
+
+## Arka plan müziği
+
+İki CC0 parça vardır: menü/mağaza/ayarlar için `assets/audio/menu-theme.mp3`, koşu için `assets/audio/gameplay-theme.mp3`. Kaynak, sanatçı ve işleme notları `assets/audio/CREDITS.md` içindedir.
+
+- **Geçişler.** `js/music.js` var olan `DR.UI` çağrılarını sarar: OYNA/yeniden dene oyun parçasını baştan başlatır, duraklatma yumuşakça susturur, devam kaldığı yerden sürer, oyun sonu ve menüye dönüş menü parçasına geçer. Geçişte çalan parça 0,45 sn'de kısılıp durur, yenisi ardından 0,7 sn'de açılır; iki parça hiç üst üste çalmaz.
+- **Döngü.** http(s) üzerinde Web Audio ile çalınır. Döngü noktaları `js/config.js` içindeki gerçek içerik uzunluğu ve MP3 gecikmesiyle (1105 örnek) örnek düzeyinde kesindir. `file://` ile açılınca `<audio>` öğesine düşülür; orada döngüde çok kısa bir boşluk olabilir.
+- **Otomatik oynatma.** İlk dokunuş ya da tuş basışından önce hiçbir şey çalmaz ve dosya indirilmez. Menü çalınca oyun parçası önceden çözülür. Sekme gizlenince ses bağlamı askıya alınır.
+- **Ayarlar.** Ayarlar > SES'te MÜZİK (aç/kapa) ve MÜZİK SESİ (%0–100) vardır; `dinorush-save-v1` içinde `music` ve `musicVolume` alanlarına kaydedilir (varsayılan açık, %70). Duyulan düzey ANA SES × MÜZİK SESİ'dir; SESSİZ müziği de susturur.
+- **Yayın paketi.** Müzik service worker kurulumunda indirilmez; ilk çalındığında önbelleğe alınır, sonra çevrimdışı da çalar.
 
 ## Arayüz PNG çerçeveleri (Aşama 2)
 

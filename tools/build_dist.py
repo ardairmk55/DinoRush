@@ -32,7 +32,7 @@ def collect():
             files.add(str(Path("css", u).as_posix()).replace("css/../", ""))
     # JS içindeki varlık yolları (manifestler, görünüm sayfaları)
     for js in [f for f in list(files) if f.endswith(".js")]:
-        for m in re.finditer(r"[\"'`](assets/[^\"'`]+\.(?:png|jpg|webp))[\"'`]", text(js)):
+        for m in re.finditer(r"[\"'`](assets/[^\"'`]+\.(?:png|jpg|webp|mp3))[\"'`]", text(js)):
             files.add(m.group(1))
     files.add("site.webmanifest")
     manifest = json.loads(text("site.webmanifest"))
@@ -94,7 +94,8 @@ def main():
     idx.write_text(html, encoding="utf8")
     # Önbellek listesi ve içerik özeti
     # Tekil liste: cache.addAll yinelenen istekte kurulumu reddeder (service worker kaydı silinir).
-    precache = ["./"] + sorted(set(files) | {"404.html", "site.webmanifest"})
+    # Müzik (~3 MB) kurulumda indirilmez; ilk çalındığında fetch işleyicisi önbelleğe alır.
+    precache = ["./"] + sorted((set(files) | {"404.html", "site.webmanifest"}) - {f for f in files if f.endswith(".mp3")})
     h = hashlib.sha256()
     for f in sorted(set(files) | {"404.html", "site.webmanifest"}):
         h.update(f.encode()); h.update((DIST / f).read_bytes())

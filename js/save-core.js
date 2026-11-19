@@ -29,7 +29,7 @@
   const LEGACY_IDS = { skin: { lagoon: "midnight" } };
 
   // İlerleme dışındaki tercihler (sıfırlamada korunur).
-  const SETTING_KEYS = ["sound", "vibration", "lowEffects", "masterVolume", "sfxVolume", "screenShake", "flash", "scanlines"];
+  const SETTING_KEYS = ["sound", "vibration", "lowEffects", "masterVolume", "sfxVolume", "music", "musicVolume", "screenShake", "flash", "scanlines"];
 
   function defaultId(catalog, kind) {
     const list = catalog[SLOTS[kind].list] || [];
@@ -53,6 +53,8 @@
       selectedScene: defaultId(catalog, "scene"),
       masterVolume: 80,
       sfxVolume: 80,
+      music: true,
+      musicVolume: 70,
       screenShake: !reduced,
       flash: !reduced,
       scanlines: false,
@@ -104,6 +106,8 @@
     value.lowEffects = source.lowEffects === true;
     value.masterVolume = source.masterVolume === undefined ? base.masterVolume : int(source.masterVolume, 0, 100);
     value.sfxVolume = source.sfxVolume === undefined ? base.sfxVolume : int(source.sfxVolume, 0, 100);
+    value.music = source.music !== false;
+    value.musicVolume = source.musicVolume === undefined ? base.musicVolume : int(source.musicVolume, 0, 100);
     value.screenShake = bool(source.screenShake, base.screenShake);
     value.flash = bool(source.flash, base.flash);
     value.scanlines = bool(source.scanlines, false);

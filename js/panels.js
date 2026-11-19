@@ -211,7 +211,7 @@
     const panels=[...document.querySelectorAll("[data-settings-panel]")];
     bindTabs($("settingsTabs"),tab=>{const id=tab.getAttribute("aria-controls");panels.forEach(p=>{p.hidden=p.id!==id;});cancelHold();hideResetConfirm(false);});
     document.querySelectorAll("[data-range]").forEach(input=>{
-      input.addEventListener("input",()=>{DR.Storage.update({[input.dataset.range]:Number(input.value)});syncSettings();DR.Audio.init();DR.Audio.test();});
+      input.addEventListener("input",()=>{DR.Storage.update({[input.dataset.range]:Number(input.value)});syncSettings();if(input.dataset.range==="musicVolume")return; /* müzik düzeyi çalan müzikte duyulur, test sesi yok */DR.Audio.init();DR.Audio.test();});
     });
     document.querySelectorAll("[data-setting]").forEach(btn=>btn.addEventListener("click",()=>{
       const key=btn.dataset.setting,s=DR.Storage.get();

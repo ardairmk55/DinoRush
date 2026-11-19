@@ -210,3 +210,16 @@ test("SaveCore saf: buy girdi kaydını değiştirmez", () => {
   assert.equal(JSON.stringify(d), snapshot);
   assert.equal(Core.buy(d, c, "skin", "yok").reason, "unknown");
 });
+
+test("müzik ayarları: varsayılan açık/%70, eski kayıtta eklenir, bozuk değer sınırlanır, yenilemede ve sıfırlamada korunur", () => {
+  const d = boot(makeStore(JSON.stringify({ best: 50, masterVolume: 40 }))).Storage.get();
+  assert.equal(d.music, true); assert.equal(d.musicVolume, 70); assert.equal(d.masterVolume, 40);
+  assert.equal(boot(makeStore(JSON.stringify({ music: "evet", musicVolume: 250 }))).Storage.get().musicVolume, 100);
+  assert.equal(boot(makeStore(JSON.stringify({ musicVolume: "abc" }))).Storage.get().musicVolume, 0);
+  const store = makeStore();
+  const a = boot(store); a.Storage.update({ music: false, musicVolume: 35 });
+  const b = boot(store).Storage.get();
+  assert.equal(b.music, false); assert.equal(b.musicVolume, 35);
+  const after = boot(store); after.Storage.resetProgress();
+  assert.equal(after.Storage.get().music, false); assert.equal(after.Storage.get().musicVolume, 35);
+});

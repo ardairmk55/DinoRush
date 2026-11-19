@@ -30,6 +30,9 @@
   DR.Config=Object.freeze({
     version:"1.2.0",
     saveKey:"dinorush-save-v1",
+    // Arka plan müziği (js/music.js). Kaynak ve lisanslar: assets/audio/CREDITS.md. Süreler saniye.
+    // samples/rate: MP3 içindeki gerçek içerik uzunluğu; delay: kodlayıcı+çözücü gecikmesi (576+529 örnek). Kesintisiz döngü bunlarla kurulur.
+    music:{tracks:{menu:{src:"assets/audio/menu-theme.mp3",samples:8191209,rate:48000,delay:1105},gameplay:{src:"assets/audio/gameplay-theme.mp3",samples:3274608,rate:44100,delay:1105}},fadeOut:.45,fadeIn:.7,pauseFade:.3,gain:1},
     viewport:{baseHeight:360,minWidth:640,portraitWidth:440,portraitShift:76,portraitGroundRatio:.64,portraitTouchReserve:150,groundRatio:.82,midSink:90,dprMax:3,dprMaxTouch:2},
     physics:{step:1/60,jumpPrep:.03,fastFall:650,maxFrame:.1,runSpeed:335,maxSpeed:450,speedGain:.13,jumpVelocity:-525,jumpHoldGravity:1080,jumpHoldMax:.18,jumpBuffer:.12,coyoteTime:.09,gravity:1520,duckHeight:25,playerWidth:42,playerHeight:49,playerX:120,obstacleMinGap:325,obstacleMaxGap:540},
     dinoSprite:{worldPixel:2,frameWidth:44,frameHeight:36,footRow:34,animations:{idle:{row:0,frames:6,fps:6},run:{row:1,frames:6,fps:14},jump:{row:2,frames:3,fps:1},duck:{row:3,frames:2,fps:10},dead:{row:4,frames:2,fps:4}},hitboxes:{standing:{x:11,y:6,w:25,h:29},duck:{x:9,y:17,w:30,h:18}}},
