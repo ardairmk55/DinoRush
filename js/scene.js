@@ -126,11 +126,11 @@
     const offsets=[[-4,1],[0,4],[4,1],[4,-1],[0,-3],[-4,-1]][frame];
     px(c,22,-11+offsets[0],7,10,dark);px(c,43,-11+offsets[1],7,10,dark);px(c,19+offsets[0],-3,12,3,body);px(c,40+offsets[1],-3,13,3,body);
     c.restore();}
-  function drawDino(x,feet,t,pose,skinId,menu,player,mode,deathElapsed,deathStartY){
+  function drawDino(x,feet,t,pose,skinId,menu,player,mode,deathElapsed,deathStartY,animOverride){
     const c=scene.ctx,cfg=C.dinoSprite,sheet=sheetFor(skinId);
     if(!sheet){drawDinoProcedural(x,feet,t,pose,skinId,menu);return;}
     let animation="run",frame=0,drawX=x,drawFeet=feet,angle=0;
-    if(mode==="menu"||mode==="countdown")animation="idle";
+    if(mode==="menu"||mode==="countdown")animation=animOverride&&cfg.animations[animOverride]?animOverride:"idle";
     else if(mode==="game_over")animation="dead";
     else if(player&&(player.pose==="rise"||player.pose==="fall"||player.y<scene.ground-1)){
       animation="jump";const threshold=Math.abs(C.physics.jumpVelocity)*.25;
@@ -208,7 +208,8 @@
     else{c.globalAlpha=a;px(c,p.x,p.y,p.size,p.size,p.color);}
     c.globalAlpha=1;}
   function render(model){if(!scene.ctx)return;const play=model.mode!=="menu";if(scene.portrait&&play!==scene.farPlay){scene.farPlay=play;scene.ground=groundFor();scene.cacheDirty=true;if(DR.Game&&DR.Game.onResize)DR.Game.onResize(scene.width,scene.height,scene.ground);}const c=scene.ctx,t=model.elapsed||0,camera=model.world||0,prefs=DR.Storage.get(),shakeOn=prefs.screenShake&&!prefs.lowEffects,flash=model.mode==="game_over"&&prefs.flash&&!prefs.lowEffects&&model.deathElapsed<2*C.physics.step;scene.shakeX=model.mode==="game_over"&&shakeOn&&model.deathElapsed<.09?(rnd(Math.floor(model.deathElapsed*60)+51)-.5)*2.2:0;scene.shakeY=model.mode==="game_over"&&shakeOn&&model.deathElapsed<.09?(rnd(Math.floor(model.deathElapsed*60)+61)-.5)*1.4:0;const worldDrift=model.mode==="menu"?t*18:camera;drawBackground(t,camera,model.mode==="menu",model.score);drawForeground(worldDrift,model.mode==="menu");
-    if(model.mode==="menu"){drawDino(scene.width*.075,scene.ground,t,"idle",DR.Storage.get().selected,true,null,model.mode,0,scene.ground);drawFossil(scene.width*.885,scene.ground-30,t,Math.sin(t*2)*.5,0,54);applyGrade(c,null,-8,-8,scene.width+16,scene.height+16);return;}
+    if(model.mode==="menu"){const rk=DR.Riko&&DR.Riko.pose?DR.Riko.pose(t):null; // Riko menü pozu: yalnız konum kayması + mevcut sprite satırı
+    drawDino(scene.width*.075+(rk?rk.dx:0),scene.ground+(rk?rk.dy:0),t,"idle",DR.Storage.get().selected,true,null,model.mode,0,scene.ground,rk&&rk.anim);drawFossil(scene.width*.885,scene.ground-30,t,Math.sin(t*2)*.5,0,54);applyGrade(c,null,-8,-8,scene.width+16,scene.height+16);return;}
     c.save();c.translate(-(scene.shift||0),0);
     model.pickups.forEach(f=>{if(!f.taken)drawFossil(f.x,f.y,t,0,f.phase);});model.obstacles.forEach(o=>drawObstacle(o,t));drawPteroWarnings(model.obstacles,t);
     model.particles.forEach(p=>drawParticle(c,p));

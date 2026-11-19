@@ -550,3 +550,23 @@ html.png-btn-primary #gameApp #playButton>svg:not(.button-fossil){color:#2a1405;
 }
 #gameApp .ui-pill-box .pill-icon{grid-area:auto}
 @media(orientation:portrait){.touch-hint{top:21%}}
+
+/* ===== Riko: konuşma balonu ve tıklama alanı ===== */
+.riko-bubble{position:absolute;z-index:16;left:0;top:0;width:max-content;max-width:min(320px,calc(100vw - 16px));padding:9px 13px 10px;background:#0d2a2c;border:2px solid #9fd56f;border-radius:10px;box-shadow:0 4px 0 #04110f,0 10px 22px #0009,inset 0 0 0 2px #071a1b;color:#f3ecd2;font:700 14px/1.42 var(--body);letter-spacing:.01em;pointer-events:none;opacity:0;transform:translateY(6px) scale(.92);transform-origin:var(--tail-x,26px) 100%;transition:opacity .22s ease,transform .26s cubic-bezier(.2,1.4,.4,1)}
+.riko-bubble.show{opacity:1;transform:none}
+.riko-bubble.leaving{opacity:0;transform:translateY(4px) scale(.96);transition:opacity .25s ease,transform .25s ease}
+.riko-bubble::after{content:"";position:absolute;left:var(--tail-x,26px);bottom:-9px;width:12px;height:12px;background:#0d2a2c;border-right:2px solid #9fd56f;border-bottom:2px solid #9fd56f;transform:translateX(-50%) rotate(45deg)}
+.riko-bubble p{margin:0;overflow-wrap:anywhere}
+.riko-bubble .riko-name{display:block;margin-bottom:2px;color:#ffd36b;font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase}
+.riko-bubble[data-trigger=record],.riko-bubble[data-trigger=gameover][data-id="40"]{border-color:#ffb020}
+.riko-bubble[data-trigger=record]::after,.riko-bubble[data-trigger=gameover][data-id="40"]::after{border-color:#ffb020}
+.riko-bubble.in-play{max-width:min(260px,calc(100vw - 16px));padding:7px 11px 8px;font-size:13px;opacity:.94}
+.riko-bubble.in-play.show{opacity:.94}
+.riko-hit{position:absolute;z-index:5;display:none;padding:0;background:transparent;border:0;border-radius:12px;cursor:pointer;touch-action:manipulation}
+.game-app[data-mode=menu] .riko-hit{display:block}
+.riko-hit:focus-visible{outline:3px solid #ffd36b;outline-offset:2px}
+@media(max-width:480px){.riko-bubble{font-size:13px;max-width:calc(100vw - 16px)}}
+@media(prefers-reduced-motion:reduce){.riko-bubble,.riko-bubble.leaving{transition:opacity .01ms}.riko-bubble{transform:none}}
+.riko-bubble[data-side=below]{transform-origin:var(--tail-x,26px) 0}
+.riko-bubble[data-side=below]::after{bottom:auto;top:-9px;transform:translateX(-50%) rotate(225deg)}
+.riko-bubble[data-side=float]::after{display:none}

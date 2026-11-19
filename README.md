@@ -29,8 +29,10 @@ Rekor, amber fosil bakiyesi, açılan/seçili kozmetikler ve tercihler `localSto
 Kayıt ve satın alma mantığı tarayıcısız test edilir:
 
 ```
-node --test tests/save.test.js tests/rules.test.js
+node --test tests/save.test.js tests/rules.test.js tests/riko.test.js
 ```
+
+(`npm test` aynı komutu çalıştırır.)
 
 ## Yapı
 
@@ -43,6 +45,7 @@ node --test tests/save.test.js tests/rules.test.js
 - `js/input.js` — klavye ve Pointer Events kontrolleri.
 - `js/save-core.js` — saf kayıt/migrasyon/satın alma mantığı (Node testleri bunu kullanır).
 - `js/storage.js`, `js/audio.js`, `js/ui.js` — güvenli yerel kayıt, Web Audio/titreşim, ekranlar.
+- `js/riko-messages.js`, `js/riko-core.js`, `js/riko.js` — Riko konuşma sistemi (aşağıya bakın).
 - `js/panels.js` — mağaza (sekmeler, kart durumları, onay, önizlemeler) ve ayarlar paneli.
 - `tools/make_dino_variants.py`, `tests/save.test.js` — varyant üretimi ve birim testleri.
 - `assets/dino/dino_sheet.png` — 44×36 hücreli, beş animasyon satırlı dinozor sprite sayfası.
@@ -52,6 +55,20 @@ node --test tests/save.test.js tests/rules.test.js
 `DINO_PIXEL_WORLD` değeri 2'dir. Ayakta dino hitbox'ı kaynak pikselinde `{x:11,y:6,w:25,h:29}`, eğilmede `{x:9,y:17,w:30,h:18}` olarak kalır ve bu katsayıyla dünya birimine çevrilir. Engel hitbox'ları sprite sınırlarının her kenarından yüzde 12 içeri alınır. Özgün `assets/art_src/` dosyaları işleme sırasında değiştirilmez.
 
 Arka plan, engeller ve arayüz Canvas/CSS ile çizilir; dinozor çizimi yerel sprite sayfasından yüklenir. PNG'ler paletli ve kutu filtresiyle küçültülmüş olarak `assets/` altında bulunur. Harici CDN, `fetch` veya görsel piksel okuması yoktur. Sistem yazı tipleri Türkçe karakterleri gösterecek fallback zinciriyle ayarlanmıştır.
+
+## Riko konuşma sistemi
+
+Menüdeki dino (Riko) 60 sabit mesajla konuşur. Mesaj metinleri `js/riko-messages.js` içinde kimlik, kategori ve konuşma animasyonuyla birlikte durur.
+
+- `js/riko-core.js` saf seçim mantığıdır; DOM ve zamanlayıcı içermez. Öncelik sırası: rekor > oyun sonu > başlangıç > fosil > mağaza/ayarlar > tıklama > menü > hareketsizlik. Aktif mesajdan düşük öncelikli olay gelirse yok sayılır; kuyruk birikmez.
+- Tekrar önleme önce son 10 mesajı dışlar. Havuz tükenirse son 5'i, o da tükenirse yalnız son mesajı dışlar. Aynı mesaj art arda hiç gelmez.
+- Tanıtım mesajı (1) yalnız ilk ziyarette çıkar. 3 günden uzun aradan sonra karşılama 6 gelir. Özel mesajlar (56–60) seyrektir.
+- Ton, mevcut rekordan türetilir; yeni bir seviye sistemi yoktur.
+- `js/riko.js` balonu (`textContent`, `aria-live`) ve Riko'ya dokunma alanını yönetir. Balon dokunmayı engellemez (`pointer-events:none`) ve düğmelerin üstüne binmeyecek yeri seçer.
+- `js/riko.js` var olan `DR.UI` çağrılarını sarar: `enterCountdown`, `updateFossils`, `updateRecord`, `showGameOver`, `showPause`, `showMenu`. Oyun mekaniği değişmez.
+- Duraklatınca ve sekme gizlenince balon kapanır. Hareketsizlik mesajı 50–60 sn sonra gelir.
+- Konuşma hareketleri var olan sprite satırlarıyla yapılır: nefes, zıplama, eğilme. `prefers-reduced-motion` açıkken kapanır.
+- Geçmiş `localStorage` içinde `dinorush-riko-v1` anahtarıyla tutulur: `recentMessages`, `lastMessageId`, `firstVisit`, `lastSeen`. Kayıt bozuksa varsayılana döner.
 
 ## Arayüz PNG çerçeveleri (Aşama 2)
 

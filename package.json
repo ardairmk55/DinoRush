@@ -4,7 +4,7 @@
   "private": true,
   "description": "DinoRush: tarayıcıda oynanan özgün piksel sanat koşu oyunu.",
   "scripts": {
-    "test": "node --test tests/save.test.js tests/rules.test.js",
+    "test": "node --test tests/save.test.js tests/rules.test.js tests/riko.test.js",
     "audit": "node tools/audit.js",
     "build": "python tools/build_dist.py"
   },
