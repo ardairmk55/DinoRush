@@ -63,7 +63,7 @@ test("boş kayıt: varsayılan alanlar", () => {
   assert.deepEqual(d.ownedTrails, ["dust"]); assert.equal(d.selectedTrail, "dust");
   assert.deepEqual(d.ownedScenes, ["night"]); assert.equal(d.selectedScene, "night");
   assert.equal(d.scanlines, false); assert.equal(d.screenShake, true); assert.equal(d.flash, true);
-  assert.equal(d.saveVersion, 2);
+  assert.equal(d.saveVersion, 3);
 });
 
 test("eski (v1) kayıt migrasyonu: alanlar korunur, lagoon -> midnight, yeni alanlar eklenir", () => {
@@ -84,7 +84,7 @@ test("eski (v1) kayıt migrasyonu: alanlar korunur, lagoon -> midnight, yeni ala
   const written = JSON.parse(store.raw());
   assert.equal(written.fossils, 38);
   assert.deepEqual(written.owned, ["fern", "amber", "midnight", "ember"]);
-  assert.equal(written.saveVersion, 2);
+  assert.equal(written.saveVersion, 3);
 });
 
 test("bozuk/yanlış tipli kayıt çökmez ve güvenli değerlere döner", () => {
@@ -105,42 +105,42 @@ test("bozuk/yanlış tipli kayıt çökmez ve güvenli değerlere döner", () =>
 });
 
 test("satın alma: bakiye düşer, öğe sahip olunur ama otomatik kuşanılmaz", () => {
-  const store = makeStore(JSON.stringify({ fossils: 100 }));
+  const store = makeStore(JSON.stringify({ fossils: 300 }));
   const DR = boot(store);
   assert.equal(DR.Storage.state("skin", "midnight").state, "buy");
   const r = DR.Storage.buy("skin", "midnight");
-  assert.equal(r.ok, true); assert.equal(r.spent, 60);
+  assert.equal(r.ok, true); assert.equal(r.spent, 200);
   const d = DR.Storage.get();
-  assert.equal(d.fossils, 40);
+  assert.equal(d.fossils, 100);
   assert.ok(d.owned.includes("midnight"));
   assert.equal(d.selected, "fern");
   assert.equal(DR.Storage.state("skin", "midnight").state, "owned");
-  assert.equal(JSON.parse(store.raw()).fossils, 40);
+  assert.equal(JSON.parse(store.raw()).fossils, 100);
   // Aynı öğe ikinci kez satın alınamaz, bakiye değişmez.
   const again = DR.Storage.buy("skin", "midnight");
   assert.equal(again.ok, false); assert.equal(again.reason, "owned");
-  assert.equal(DR.Storage.get().fossils, 40);
+  assert.equal(DR.Storage.get().fossils, 100);
 });
 
 test("yetersiz bakiye: reddedilir, eksik miktar raporlanır, kayıt değişmez", () => {
   const store = makeStore(JSON.stringify({ fossils: 20 }));
   const DR = boot(store);
   const st = DR.Storage.state("trail", "spark");
-  assert.equal(st.state, "locked"); assert.equal(st.missing, 55);
+  assert.equal(st.state, "locked"); assert.equal(st.missing, 280);
   const before = store.raw();
   const r = DR.Storage.buy("trail", "spark");
-  assert.equal(r.ok, false); assert.equal(r.reason, "insufficient"); assert.equal(r.missing, 55);
+  assert.equal(r.ok, false); assert.equal(r.reason, "insufficient"); assert.equal(r.missing, 280);
   assert.equal(DR.Storage.get().fossils, 20);
   assert.ok(!DR.Storage.get().ownedTrails.includes("spark"));
   assert.equal(store.raw(), before);
   // Sınır: bakiye tam fiyata eşitse alınabilir ve sıfıra iner.
-  const exact = boot(makeStore(JSON.stringify({ fossils: 30 })));
+  const exact = boot(makeStore(JSON.stringify({ fossils: 90 })));
   assert.equal(exact.Storage.buy("trail", "leaf").ok, true);
   assert.equal(exact.Storage.get().fossils, 0);
 });
 
 test("kuşanma: yalnızca sahip olunan öğe; seçim yeniden yüklemede kalıcı", () => {
-  const store = makeStore(JSON.stringify({ fossils: 600 }));
+  const store = makeStore(JSON.stringify({ fossils: 3000 }));
   let DR = boot(store);
   assert.equal(DR.Storage.equip("skin", "gold").ok, false);
   assert.equal(DR.Storage.equip("skin", "gold").reason, "not_owned");
@@ -155,11 +155,11 @@ test("kuşanma: yalnızca sahip olunan öğe; seçim yeniden yüklemede kalıcı
   DR = boot(store);
   const d = DR.Storage.get();
   assert.equal(d.selected, "gold"); assert.equal(d.selectedTrail, "firefly"); assert.equal(d.selectedScene, "sunset");
-  assert.equal(d.fossils, 600 - 260 - 120 - 150);
+  assert.equal(d.fossils, 3000 - 1200 - 700 - 400);
 });
 
 test("eski API buySkin/selectSkin çalışmaya devam eder", () => {
-  const DR = boot(makeStore(JSON.stringify({ fossils: 30 })));
+  const DR = boot(makeStore(JSON.stringify({ fossils: 100 })));
   assert.equal(DR.Storage.buySkin("amber"), true);
   assert.equal(DR.Storage.get().selected, "amber");
   assert.equal(DR.Storage.selectSkin("fern"), true);
@@ -203,7 +203,7 @@ test("oynama süresi birikir ve kalıcıdır", () => {
 
 test("SaveCore saf: buy girdi kaydını değiştirmez", () => {
   const c = catalog();
-  const d = Core.normalize({ fossils: 50 }, c);
+  const d = Core.normalize({ fossils: 150 }, c);
   const snapshot = JSON.stringify(d);
   const r = Core.buy(d, c, "skin", "amber");
   assert.equal(r.ok, true);
@@ -211,15 +211,99 @@ test("SaveCore saf: buy girdi kaydını değiştirmez", () => {
   assert.equal(Core.buy(d, c, "skin", "yok").reason, "unknown");
 });
 
-test("müzik ayarları: varsayılan açık/%70, eski kayıtta eklenir, bozuk değer sınırlanır, yenilemede ve sıfırlamada korunur", () => {
-  const d = boot(makeStore(JSON.stringify({ best: 50, masterVolume: 40 }))).Storage.get();
-  assert.equal(d.music, true); assert.equal(d.musicVolume, 70); assert.equal(d.masterVolume, 40);
-  assert.equal(boot(makeStore(JSON.stringify({ music: "evet", musicVolume: 250 }))).Storage.get().musicVolume, 100);
-  assert.equal(boot(makeStore(JSON.stringify({ musicVolume: "abc" }))).Storage.get().musicVolume, 0);
+test("müzik ayarları: v2 musicVolume menü ve oyun müziğine taşınır, bozuk değer sınırlanır, yenilemede ve sıfırlamada korunur", () => {
+  const d = boot(makeStore(JSON.stringify({ best: 50, masterVolume: 40, musicVolume: 55 }))).Storage.get();
+  assert.equal(d.music, true); assert.equal(d.menuMusicVolume, 55); assert.equal(d.gameMusicVolume, 55); assert.equal(d.masterVolume, 40);
+  assert.equal("musicVolume" in d, false);
+  const fresh = boot(makeStore()).Storage.get();
+  assert.equal(fresh.menuMusicVolume, 70); assert.equal(fresh.gameMusicVolume, 70);
+  assert.equal(boot(makeStore(JSON.stringify({ menuMusicVolume: 250 }))).Storage.get().menuMusicVolume, 100);
+  assert.equal(boot(makeStore(JSON.stringify({ gameMusicVolume: "abc" }))).Storage.get().gameMusicVolume, 0);
   const store = makeStore();
-  const a = boot(store); a.Storage.update({ music: false, musicVolume: 35 });
+  boot(store).Storage.update({ music: false, menuMusicVolume: 35, gameMusicVolume: 15 });
   const b = boot(store).Storage.get();
-  assert.equal(b.music, false); assert.equal(b.musicVolume, 35);
+  assert.equal(b.music, false); assert.equal(b.menuMusicVolume, 35); assert.equal(b.gameMusicVolume, 15);
   const after = boot(store); after.Storage.resetProgress();
-  assert.equal(after.Storage.get().music, false); assert.equal(after.Storage.get().musicVolume, 35);
+  assert.equal(after.Storage.get().menuMusicVolume, 35); assert.equal(after.Storage.get().gameMusicVolume, 15);
+});
+
+test("görüntü ayarları: parçacık, performans, animasyon azaltma; varsayılanlar ve kalıcılık", () => {
+  const d = boot(makeStore()).Storage.get();
+  assert.equal(d.particles, true); assert.equal(d.performance, false); assert.equal(d.reduceMotion, false);
+  assert.equal(boot(makeStore(), { reducedMotion: true }).Storage.get().reduceMotion, true);
+  const store = makeStore();
+  boot(store).Storage.update({ particles: false, performance: true, reduceMotion: true });
+  const b = boot(store).Storage.get();
+  assert.deepEqual([b.particles, b.performance, b.reduceMotion], [false, true, true]);
+  assert.equal(boot(makeStore(JSON.stringify({ particles: "evet" }))).Storage.get().particles, true);
+});
+
+test("ekonomi: her kozmetiğin nadirliği var ve fiyatı nadirlik aralığında; ücretsiz yalnız varsayılanlar", () => {
+  const c = catalog(), ranges = { starter: [80, 120], standard: [150, 250], rare: [300, 500], epic: [600, 900], legendary: [1000, 1500] };
+  for (const list of ["skins", "trails", "scenes", "accessories"]) {
+    c[list].forEach((item, i) => {
+      assert.ok(ranges[item.rarity], list + "/" + item.id + " nadirlik");
+      if (item.cost === 0) { assert.equal(i, 0, list + "/" + item.id + " ücretsiz ama varsayılan değil"); return; }
+      const [lo, hi] = ranges[item.rarity];
+      assert.ok(item.cost >= lo && item.cost <= hi, list + "/" + item.id + " " + item.cost + " " + item.rarity + " aralığında değil");
+    });
+  }
+  assert.equal(c.accessories.length, 17);
+  assert.deepEqual([...new Set(c.accessories.map(a => a.slot))].sort(), ["face", "gear", "head"]);
+});
+
+test("aksesuar: bağımsız satın alma, yuva başına tek, farklı yuvalar birlikte, çıkarma, kalıcılık", () => {
+  const store = makeStore(JSON.stringify({ fossils: 5000 }));
+  let DR = boot(store);
+  assert.deepEqual(DR.Storage.get().accessories, { head: null, face: null, gear: null });
+  assert.equal(DR.Storage.state("accessory", "gold-crown").state, "buy");
+  assert.equal(DR.Storage.equip("accessory", "gold-crown").reason, "not_owned");
+  for (const id of ["gold-crown", "explorer-hat", "sunglasses", "backpack"]) assert.equal(DR.Storage.buy("accessory", id).ok, true, id);
+  assert.equal(DR.Storage.buy("accessory", "gold-crown").reason, "owned");
+  assert.equal(DR.Storage.get().fossils, 5000 - 1400 - 120 - 160 - 220);
+  DR.Storage.equip("accessory", "gold-crown"); DR.Storage.equip("accessory", "sunglasses"); DR.Storage.equip("accessory", "backpack");
+  assert.deepEqual(DR.Storage.get().accessories, { head: "gold-crown", face: "sunglasses", gear: "backpack" });
+  DR.Storage.equip("accessory", "explorer-hat"); // aynı yuva: taç çıkar
+  assert.equal(DR.Storage.get().accessories.head, "explorer-hat");
+  assert.equal(DR.Storage.state("accessory", "gold-crown").state, "owned");
+  assert.equal(DR.Storage.state("accessory", "explorer-hat").state, "selected");
+  assert.equal(DR.Storage.unequip("accessory", "sunglasses").ok, true);
+  assert.equal(DR.Storage.unequip("accessory", "sunglasses").reason, "not_equipped");
+  assert.equal(DR.Storage.unequip("skin", "fern").reason, "unsupported");
+  DR = boot(store);
+  assert.deepEqual(DR.Storage.get().accessories, { head: "explorer-hat", face: null, gear: "backpack" });
+  assert.deepEqual(DR.Storage.get().ownedAccessories.slice().sort(), ["backpack", "explorer-hat", "gold-crown", "sunglasses"]);
+  DR.Storage.resetProgress();
+  assert.deepEqual(DR.Storage.get().ownedAccessories, []); assert.deepEqual(DR.Storage.get().accessories, { head: null, face: null, gear: null });
+});
+
+test("aksesuar kaydı bozuksa güvenli: bilinmeyen, sahip olunmayan ve yanlış yuva temizlenir", () => {
+  const d = boot(makeStore(JSON.stringify({ ownedAccessories: ["x", "sunglasses", "sunglasses", 7], accessories: { head: "sunglasses", face: "sunglasses", gear: "backpack" } }))).Storage.get();
+  assert.deepEqual(d.ownedAccessories, ["sunglasses"]);
+  assert.deepEqual(d.accessories, { head: null, face: "sunglasses", gear: null });
+  assert.deepEqual(boot(makeStore(JSON.stringify({ accessories: "bozuk" }))).Storage.get().accessories, { head: null, face: null, gear: null });
+});
+
+test("v2 kaydı v3 sürümüne taşınır: sahip olunanlar, bakiye ve seçimler korunur", () => {
+  const v2 = { saveVersion: 2, best: 2400, fossils: 37, owned: ["fern", "amber", "gold"], selected: "gold", ownedTrails: ["dust", "spark"], selectedTrail: "spark", ownedScenes: ["night", "dawn"], selectedScene: "dawn", music: true, musicVolume: 40, playTime: 99 };
+  const d = boot(makeStore(JSON.stringify(v2))).Storage.get();
+  assert.equal(d.saveVersion, 3); assert.equal(d.fossils, 37); assert.equal(d.best, 2400);
+  assert.deepEqual(d.owned, ["fern", "amber", "gold"]); assert.equal(d.selected, "gold");
+  assert.equal(d.selectedTrail, "spark"); assert.equal(d.selectedScene, "dawn");
+  assert.equal(d.menuMusicVolume, 40); assert.deepEqual(d.ownedAccessories, []);
+});
+
+test("kayıt durumu ve tam silme: savedAt yazılır; wipeAll iki anahtarı siler ve varsayılana döner", () => {
+  const store = makeStore(JSON.stringify({ fossils: 10, masterVolume: 20 }));
+  store.setItem("dinorush-riko-v1", "{}");
+  const DR = boot(store);
+  DR.Storage.addFossils(1);
+  const st = DR.Storage.status();
+  assert.equal(st.ok, true); assert.ok(st.savedAt > 0); assert.ok(st.bytes > 50);
+  DR.Storage.wipeAll(["dinorush-riko-v1"]);
+  assert.equal(store.getItem("dinorush-riko-v1"), null);
+  assert.equal(DR.Storage.get().fossils, 0); assert.equal(DR.Storage.get().masterVolume, 80);
+  const broken = boot({ getItem() { return null; }, setItem() { throw new Error("dolu"); } });
+  broken.Storage.addFossils(1);
+  assert.equal(broken.Storage.status().ok, false);
 });

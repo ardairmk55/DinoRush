@@ -13,9 +13,11 @@
   function read(){
     try{return JSON.parse(w.localStorage.getItem(key)||"null");}catch(_){return null;}
   }
-  let data=Core.normalize(read(),catalog,env());
+  let data=Core.normalize(read(),catalog,env()),lastOk=null;
+  // savedAt: son başarılı yazma zamanı (Ayarlar > Veri'de gösterilir). Yazma başarısızsa bellek kaydıyla devam edilir.
   function save(){
-    try{w.localStorage.setItem(key,JSON.stringify(data));return true;}catch(_){return false;}
+    const prev=data.savedAt;data.savedAt=Date.now();
+    try{w.localStorage.setItem(key,JSON.stringify(data));lastOk=true;return true;}catch(_){data.savedAt=prev;lastOk=false;return false;}
   }
   function commit(next){data=Core.normalize(next,catalog,env());save();return data;}
   DR.Storage={
@@ -28,6 +30,11 @@
     state(kind,id){return Core.itemState(data,catalog,kind,id);},
     buy(kind,id){const result=Core.buy(data,catalog,kind,id);if(result.ok)commit(result.data);return result;},
     equip(kind,id){const result=Core.equip(data,catalog,kind,id);if(result.ok)commit(result.data);return result;},
+    unequip(kind,id){const result=Core.unequip(data,catalog,kind,id);if(result.ok)commit(result.data);return result;},
+    // Kayıt durumu: yerel depolama yazılabiliyor mu, son kayıt zamanı, kayıt boyutu (bayt).
+    status(){let bytes=0;try{bytes=(w.localStorage.getItem(key)||"").length;}catch(_){}return {ok:lastOk!==false,savedAt:data.savedAt,bytes};},
+    // Tüm yerel verileri siler (ilerleme, ayarlar, Riko geçmişi) ve varsayılanlarla yeniden başlar.
+    wipeAll(extraKeys){try{w.localStorage.removeItem(key);(extraKeys||[]).forEach(k=>w.localStorage.removeItem(k));}catch(_){}data=Core.normalize(null,catalog,env());save();return data;},
     resetProgress(){return commit(Core.resetProgress(data,catalog,env()));},
     // Eski API (geriye uyumluluk).
     buySkin(id){const result=this.buy("skin",id);if(result.ok)this.equip("skin",id);return result.ok;},

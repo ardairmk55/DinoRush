@@ -15,21 +15,25 @@
 })(typeof self !== "undefined" ? self : this, function () {
   "use strict";
 
-  const SAVE_VERSION = 2;
+  const SAVE_VERSION = 3;
 
   // Kozmetik türü -> kayıttaki sahip olunanlar / seçili alanı.
   // "skin" eski kayıttaki owned/selected alanlarını aynen kullanır.
   const SLOTS = {
     skin: { owned: "owned", selected: "selected", list: "skins" },
     trail: { owned: "ownedTrails", selected: "selectedTrail", list: "trails" },
-    scene: { owned: "ownedScenes", selected: "selectedScene", list: "scenes" }
+    scene: { owned: "ownedScenes", selected: "selectedScene", list: "scenes" },
+    accessory: { owned: "ownedAccessories", list: "accessories", multi: true }
   };
 
   // Önceki sürümde satılan görünüm kimlikleri yeni kataloğa eşlenir.
   const LEGACY_IDS = { skin: { lagoon: "midnight" } };
 
   // İlerleme dışındaki tercihler (sıfırlamada korunur).
-  const SETTING_KEYS = ["sound", "vibration", "lowEffects", "masterVolume", "sfxVolume", "music", "musicVolume", "screenShake", "flash", "scanlines"];
+  // Aksesuar yuvaları: aynı yuvada tek aksesuar, farklı yuvalar birlikte kuşanılır.
+  const ACCESSORY_SLOTS = ["head", "face", "gear"];
+
+  const SETTING_KEYS = ["sound", "vibration", "lowEffects", "masterVolume", "sfxVolume", "music", "menuMusicVolume", "gameMusicVolume", "particles", "performance", "reduceMotion", "screenShake", "flash", "scanlines"];
 
   function defaultId(catalog, kind) {
     const list = catalog[SLOTS[kind].list] || [];
@@ -54,7 +58,14 @@
       masterVolume: 80,
       sfxVolume: 80,
       music: true,
-      musicVolume: 70,
+      menuMusicVolume: 70,
+      gameMusicVolume: 70,
+      particles: true,
+      performance: false,
+      reduceMotion: reduced,
+      ownedAccessories: [],
+      accessories: { head: null, face: null, gear: null },
+      savedAt: null,
       screenShake: !reduced,
       flash: !reduced,
       scanlines: false,
@@ -107,15 +118,40 @@
     value.masterVolume = source.masterVolume === undefined ? base.masterVolume : int(source.masterVolume, 0, 100);
     value.sfxVolume = source.sfxVolume === undefined ? base.sfxVolume : int(source.sfxVolume, 0, 100);
     value.music = source.music !== false;
-    value.musicVolume = source.musicVolume === undefined ? base.musicVolume : int(source.musicVolume, 0, 100);
+    // v2 tek "musicVolume" alanı menü ve oyun müziğine taşınır.
+    const legacyMusic = source.musicVolume === undefined ? base.menuMusicVolume : int(source.musicVolume, 0, 100);
+    value.menuMusicVolume = source.menuMusicVolume === undefined ? legacyMusic : int(source.menuMusicVolume, 0, 100);
+    value.gameMusicVolume = source.gameMusicVolume === undefined ? legacyMusic : int(source.gameMusicVolume, 0, 100);
+    delete value.musicVolume;
+    value.particles = bool(source.particles, true);
+    value.performance = bool(source.performance, false);
+    value.reduceMotion = bool(source.reduceMotion, base.reduceMotion);
+    value.savedAt = Number.isFinite(source.savedAt) && source.savedAt > 0 ? source.savedAt : null;
     value.screenShake = bool(source.screenShake, base.screenShake);
     value.flash = bool(source.flash, base.flash);
     value.scanlines = bool(source.scanlines, false);
     value.playTime = Math.max(0, Number(source.playTime) || 0);
 
-    Object.keys(SLOTS).forEach(kind => normalizeSlot(value, catalog, kind));
+    Object.keys(SLOTS).forEach(kind => { if (!SLOTS[kind].multi) normalizeSlot(value, catalog, kind); });
+    normalizeAccessories(value, catalog, source);
     value.saveVersion = SAVE_VERSION;
     return value;
+  }
+
+  function normalizeAccessories(value, catalog, source) {
+    const list = catalog.accessories || [];
+    const byId = id => list.find(item => item.id === id);
+    const raw = Array.isArray(source.ownedAccessories) ? source.ownedAccessories : [];
+    const owned = [];
+    raw.forEach(id => { if (byId(id) && !owned.includes(id)) owned.push(id); });
+    const eq = source.accessories && typeof source.accessories === "object" && !Array.isArray(source.accessories) ? source.accessories : {};
+    const accessories = {};
+    ACCESSORY_SLOTS.forEach(slot => {
+      const item = byId(eq[slot]);
+      accessories[slot] = item && item.slot === slot && owned.includes(item.id) ? item.id : null;
+    });
+    value.ownedAccessories = owned;
+    value.accessories = accessories;
   }
 
   function findItem(catalog, kind, id) {
@@ -131,7 +167,9 @@
 
   function isSelected(data, kind, id) {
     const slot = SLOTS[kind];
-    return !!slot && data[slot.selected] === id;
+    if (!slot) return false;
+    if (slot.multi) return !!data.accessories && Object.values(data.accessories).includes(id);
+    return data[slot.selected] === id;
   }
 
   /** Kart durumu: "selected" | "owned" | "buy" | "locked" (bakiye yetersiz). */
@@ -165,7 +203,18 @@
     if (!findItem(catalog, kind, id)) return { ok: false, reason: "unknown", data };
     if (!isOwned(data, kind, id)) return { ok: false, reason: "not_owned", data };
     const next = Object.assign({}, data);
-    next[SLOTS[kind].selected] = id;
+    if (SLOTS[kind].multi) next.accessories = Object.assign({}, data.accessories, { [findItem(catalog, kind, id).slot]: id });
+    else next[SLOTS[kind].selected] = id;
+    return { ok: true, data: next };
+  }
+
+  /** Aksesuarı çıkarır (yuvası boşalır). Diğer türlerde her zaman bir seçim olduğu için desteklenmez. */
+  function unequip(data, catalog, kind, id) {
+    const item = findItem(catalog, kind, id);
+    if (!item || !SLOTS[kind].multi) return { ok: false, reason: "unsupported", data };
+    if (!data.accessories || data.accessories[item.slot] !== id) return { ok: false, reason: "not_equipped", data };
+    const next = Object.assign({}, data);
+    next.accessories = Object.assign({}, data.accessories, { [item.slot]: null });
     return { ok: true, data: next };
   }
 
@@ -176,5 +225,5 @@
     return normalize(fresh, catalog, env);
   }
 
-  return { SAVE_VERSION, SLOTS, LEGACY_IDS, SETTING_KEYS, defaults, normalize, findItem, isOwned, isSelected, itemState, buy, equip, resetProgress };
+  return { SAVE_VERSION, SLOTS, LEGACY_IDS, SETTING_KEYS, ACCESSORY_SLOTS, defaults, normalize, findItem, isOwned, isSelected, itemState, buy, equip, unequip, resetProgress };
 });

@@ -27,11 +27,14 @@
   const log=[];           // test/teşhis: son 20 çalma aralığı {name,from,to}
   const fades=new Set();let fadeTimer=null; // yalnız element kipinde, yalnız kısma sürerken çalışır
 
+  // Ana düzey (master GainNode): TÜM SESLER ve MÜZİK açıksa GENEL SES; parça düzeyi ayrıca uygulanır.
   function level(){
     const s=DR.Storage.get();
     if(!s.sound||!s.music)return 0;
-    return Math.max(0,Math.min(1,(s.masterVolume/100)*(s.musicVolume/100)*(C.gain||1)));
+    return Math.max(0,Math.min(1,(s.masterVolume/100)*(C.gain||1)));
   }
+  // Parça düzeyi: MENÜ MÜZİĞİ (menü/mağaza/ayarlar) ve OYUN MÜZİĞİ ayrı kaydırıcılardır.
+  function trackVol(name){const s=DR.Storage.get(),v=name==="gameplay"?s.gameMusicVolume:s.menuMusicVolume;return Math.max(0,Math.min(1,(Number(v)||0)/100));}
   function record(name,from){const e={name,from,to:null};log.push(e);if(log.length>20)log.shift();return e;}
 
   /* ---------- yükleme ---------- */
@@ -74,7 +77,7 @@
     const src=ctx.createBufferSource(),g=ctx.createGain();
     src.buffer=b.buf;src.loop=true;src.loopStart=b.start;src.loopEnd=b.end;
     const o=offset==null||offset<b.start||offset>=b.end?b.start:offset;
-    g.gain.setValueAtTime(0,when);g.gain.linearRampToValueAtTime(1,when+C.fadeIn);
+    g.gain.setValueAtTime(0,when);g.gain.linearRampToValueAtTime(trackVol(name),when+C.fadeIn);
     src.connect(g);g.connect(master);src.start(when,o);
     src.onended=()=>{try{src.disconnect();g.disconnect();}catch(_){}};
     return {name,src,g,t0:when,o,b,entry:record(name,when)};
@@ -82,7 +85,7 @@
   function posA(v){const L=v.b.end-v.b.start,el=Math.max(0,ctx.currentTime-v.t0);return v.b.start+((v.o-v.b.start+el)%L+L)%L;}
   function stopA(v,fade){
     const t=Math.max(ctx.currentTime,v.t0),g=v.g.gain;
-    const now=ctx.currentTime<v.t0?0:Math.min(1,g.value);
+    const now=ctx.currentTime<v.t0?0:Math.max(0,g.value);
     g.cancelScheduledValues(ctx.currentTime);
     g.setValueAtTime(now,t);g.linearRampToValueAtTime(0,t+fade);
     try{v.src.stop(t+fade+.02);}catch(_){}
@@ -96,7 +99,7 @@
       if(now<f.at)continue;
       const k=Math.min(1,(now-f.at)/f.ms);
       if(f.to>0&&f.v.el.paused)f.v.el.play().catch(()=>{});
-      f.v.mix=f.from+(f.to-f.from)*k;f.v.el.volume=Math.max(0,Math.min(1,f.v.mix*lv));
+      f.v.mix=f.from+(f.to-f.from)*k;f.v.el.volume=Math.max(0,Math.min(1,f.v.mix*lv*trackVol(f.v.name)));
       if(k>=1){fades.delete(f);if(f.done)f.done();}
     }
     if(!fades.size){clearInterval(fadeTimer);fadeTimer=null;}
@@ -125,13 +128,20 @@
   const stop=(v,f)=>mode==="webaudio"?stopA(v,f):stopE(v,f);
   const pos=v=>mode==="webaudio"?posA(v):(v.el.currentTime||0);
   function setMaster(lv){
-    if(mode==="webaudio"&&master)master.gain.setTargetAtTime(lv,ctx.currentTime,.05);
-    else if(mode==="element"&&active&&!fades.size)active.el.volume=Math.max(0,Math.min(1,active.mix*lv));
+    if(mode==="webaudio"&&master){
+      master.gain.setTargetAtTime(lv,ctx.currentTime,.05);
+      // Çalan parçanın düzeyi değiştiyse yumuşakça uygula (açılış kısması sürüyorsa onun sonuna hedefle).
+      if(active&&active.g){const now=ctx.currentTime,end=active.t0+C.fadeIn,g=active.g.gain,vol=trackVol(active.name);
+        if(now>=end){g.cancelScheduledValues(now);g.setTargetAtTime(vol,now,.05);}
+        else if(now>=active.t0){const cur=g.value;g.cancelScheduledValues(now);g.setValueAtTime(cur,now);g.linearRampToValueAtTime(vol,end);}
+        else{g.cancelScheduledValues(now);g.setValueAtTime(0,active.t0);g.linearRampToValueAtTime(vol,end);}} // açılış henüz başlamadı
+    }
+    else if(mode==="element"&&active&&!fades.size)active.el.volume=Math.max(0,Math.min(1,active.mix*lv*trackVol(active.name)));
   }
   function update(){
     if(!unlocked)return;
     const lv=level();setMaster(lv);
-    const target=lv>0&&!(want==="gameplay"&&paused)?want:null;
+    const target=lv>0&&trackVol(want)>0&&!(want==="gameplay"&&paused)?want:null;
     if(active&&active.name===target)return;
     if(active){
       positions[active.name]=pos(active);
@@ -203,7 +213,7 @@
   DR.Music={
     update,
     // Teşhis ve testler için salt okunur durum
-    state(){return {mode,want,paused,unlocked,hooked,active:active&&active.name,ctx:ctx&&ctx.state,level:level(),loaded:Object.keys(mode==="element"?elements:buffers),position:active?pos(active):null,time:mode==="webaudio"&&ctx?ctx.currentTime:performance.now()/1000,log:log.map(e=>Object.assign({},e))};},
+    state(){return {mode,want,paused,unlocked,hooked,active:active&&active.name,ctx:ctx&&ctx.state,level:level(),trackVolume:{menu:trackVol("menu"),gameplay:trackVol("gameplay")},voiceGain:active&&active.g?active.g.gain.value:null,loaded:Object.keys(mode==="element"?elements:buffers),position:active?pos(active):null,time:mode==="webaudio"&&ctx?ctx.currentTime:performance.now()/1000,log:log.map(e=>Object.assign({},e))};},
     loopPoints(name){const b=buffers[name];return b?{start:b.start,end:b.end,duration:b.buf.duration}:null;}
   };
 })(window);

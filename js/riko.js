@@ -7,7 +7,8 @@
   const Core=DR.RikoCore,KEY="dinorush-riko-v1",doc=w.document;
   const IDLE_FIRST=50000,IDLE_JITTER=10000,IDLE_AGAIN=60000,CLICK_COOLDOWN=900;
   let startBest=0,history=load(),active=null,hideTimer=0,idleTimer=0,lastClick=0,lastFossilSpeak=0,recordSpoken=false,startSpoken=false,anim=null,bubble=null,text=null,hit=null,lastActivity=0;
-  const reduced=()=>{try{return w.matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(_){return false;}};
+  // Animasyon azaltma: Ayarlar > Görüntü (ilk açılışta sistemin "hareketi azalt" tercihinden gelir).
+  const reduced=()=>!!DR.Storage.get().reduceMotion;
 
   /* ---------- kayıt ---------- */
   function load(){try{return Core.normalize(JSON.parse(w.localStorage.getItem(KEY)||"null"));}catch(_){return Core.defaults();}}
@@ -64,15 +65,23 @@
     // Küçük ekran (ör. 320x568): dinonun üstü/altı düğmelerle dolu. Ekranda dinoya en yakın boş yeri ara; kuyruk gizlenir.
     if(best.area>0){
       if(!a.play&&hit){const r=hit.getBoundingClientRect();if(r.width)list.push(r);} // Riko'nun kendisini de kapatma
-      for(const maxW of [320,220]){
+      for(const maxW of [320,220,180]){
         bubble.style.maxWidth=Math.min(maxW,vw-2*m)+"px";
-        const bw=bubble.offsetWidth,bh=bubble.offsetHeight,left=Math.max(m,Math.min(vw-bw-m,Math.round(a.x-26)));
-        let found=null;
-        for(let top=m;top+bh<=vh-m;top+=4){
-          if(overlapArea({l:left,t:top,r:left+bw,b:top+bh},list)===0&&(!found||Math.abs(top+bh-a.y)<Math.abs(found+bh-a.y)))found=top;
+        const bw=bubble.offsetWidth,bh=bubble.offsetHeight;
+        // Önce dinonun hizası, sonra ekranın sol ve sağ kenarı (geniş paneller açıkken kenar boşlukları)
+        const lefts=[Math.max(m,Math.min(vw-bw-m,Math.round(a.x-26))),m,vw-bw-m];
+        let found=null,foundLeft=0;
+        for(const left of lefts){
+          for(let top=m;top+bh<=vh-m;top+=4){
+            if(overlapArea({l:left,t:top,r:left+bw,b:top+bh},list)===0&&(found===null||Math.abs(top+bh-a.y)<Math.abs(found+bh-a.y))){found=top;foundLeft=left;}
+          }
+          if(found!==null)break;
         }
-        if(found!==null){best={side:"float",maxW,left,top:found,bw,area:0};break;}
+        if(found!==null){best={side:"float",maxW,left:foundLeft,top:found,bw,area:0};break;}
       }
+      // Mağaza/ayarlar paneli ekranı kaplıyorsa (küçük telefonlar) balon paneli kapatmasın: bu mesaj atlanır.
+      const trig=bubble.dataset.trigger;
+      if(best.area>0&&(trig==="store"||trig==="settings")){hide(true);return;}
     }
     bubble.style.maxWidth=Math.min(best.maxW,vw-2*m)+"px";
     bubble.style.left=best.left+"px";bubble.style.top=best.top+"px";
@@ -198,7 +207,9 @@
     else{const t0=Date.now(),poll=setInterval(()=>{if(ready()||Date.now()-t0>8000){clearInterval(poll);setTimeout(greet,500);}},150);}
   }
 
-  DR.Riko={pose,say,hide,get active(){return active;},get history(){return history;},
+  // Ayarlar > Veri > tam sıfırlama: konuşma geçmişini bellekte de sıfırla (eski geçmiş yeniden yazılmasın).
+  function reset(){hide(true);history=Core.defaults();save();}
+  DR.Riko={pose,say,hide,reset,get active(){return active;},get history(){return history;},
     // Test kancası: hareketsizlik süresini kısaltır
     setIdleDelay(ms){clearTimeout(idleTimer);armIdle(ms);}};
   if(doc.readyState==="loading")doc.addEventListener("DOMContentLoaded",init,{once:true});else init();

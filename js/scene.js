@@ -10,10 +10,11 @@
   function resize(){
     if(!scene.canvas)return;
     const box=scene.canvas.getBoundingClientRect(),cssW=Math.max(1,box.width),cssH=Math.max(1,box.height);
-    const low=DR.Storage.get().lowEffects,device=Number(navigator.deviceMemory)||8;
+    const low=DR.Storage.get().lowEffects,perf=DR.Storage.get().performance,device=Number(navigator.deviceMemory)||8;
     // Dokunmatik cihazlarda tuval yoğunluğu 2x ile sınırlı: 3x telefonda boyanan piksel ~%55 azalır, görsel fark yok denecek kadar az.
     let coarse=false;try{coarse=!!(window.matchMedia&&window.matchMedia("(pointer: coarse)").matches);}catch(_){}
-    const cap=device<4?1.75:(coarse?C.viewport.dprMaxTouch:C.viewport.dprMax);
+    // Performans modu: tuval 1x yoğunlukta çizilir (Retina/3x ekranlarda boyanan piksel 4–9 kat azalır).
+    const cap=perf?1:device<4?1.75:(coarse?C.viewport.dprMaxTouch:C.viewport.dprMax);
     scene.dpr=Math.max(1,Math.min(cap,window.devicePixelRatio||1,low?2:C.viewport.dprMax)*scene.quality);
     // Dikey ekran: görünür dünya daha dar (yakınlaştırma) ve çizimde kamera sola kayar.
     // Yalnız görüntüdür; fizik, çarpışma ve engel aralıkları aynı kalır. Engeller görünür kenarın dışında doğar.
@@ -87,7 +88,8 @@
   // Menüde çit katmanı sabit durur; tabela düğme yığınının arkasında (ekran ortası) kalır.
   const MID_SIGN_CENTER=372;
   function midCamera(menu,parallax){return menu?(MID_SIGN_CENTER-scene.width/2)/.25:parallax;}
-  function lowMotion(){return DR.Storage.get().lowEffects||scene.reducedMotion||scene.quality<=.65;}
+  // Ayarlar: düşük efekt kalitesi, animasyon azaltma ve performans modu süs hareketlerini (ateş böceği, sis kayması) kapatır.
+  function lowMotion(){const s=DR.Storage.get();return s.lowEffects||s.reduceMotion||s.performance||scene.quality<=.65;}
   function drawFarEffects(ctx,t,score){
     const wid=scene.width,unit=wid/320,quiet=lowMotion(),pulse=quiet ? .24 : (.31+.12*Math.sin(t*.45));
     if(!quiet){ctx.save();ctx.globalCompositeOperation="lighter";const fy=scene.farY||0,mx=wid*.808,my=wid*.087+fy,r=wid*.075,halo=ctx.createRadialGradient(mx,my,r*.42,mx,my,r*2.4);halo.addColorStop(0,"rgba(79,195,176,"+pulse+")");halo.addColorStop(.55,"rgba(46,126,120,.11)");halo.addColorStop(1,"rgba(46,126,120,0)");ctx.fillStyle=halo;ctx.fillRect(mx-r*2.5,my-r*2.5,r*5,r*5);
@@ -104,7 +106,7 @@
   function drawBackground(t,camera,menu,score){
     if(scene.cacheDirty)buildCache();const c=scene.ctx,wid=scene.width,hei=scene.height,ground=scene.ground,parallax=menu?t*18:camera,far=DR.Assets.get("bgFar"),mid=DR.Assets.get("bgMid");
     const scale=scene.dpr*scene.scale;c.setTransform(1,0,0,1,0,0);c.imageSmoothingEnabled=false;c.clearRect(0,0,scene.canvas.width,scene.canvas.height);c.setTransform(scale,0,0,scale,scene.shakeX*scale,scene.shakeY*scale);c.drawImage(scene.cache,-3,-3,wid+6,hei+6);
-    if(!DR.Storage.get().lowEffects&&!scene.reducedMotion&&scene.quality>.75){for(let i=0;i<12;i++){const x=(i*113-parallax*.11%(wid+20)+wid+20)%(wid+20),y=(i*71+t*3)%(ground*.8);c.globalAlpha=.2+.4*Math.sin(t*1.5+i);px(c,x,y,2,2,i%2?"#9ee268":"#7fffe8");}c.globalAlpha=1;}
+    if(!lowMotion()&&scene.quality>.75){for(let i=0;i<12;i++){const x=(i*113-parallax*.11%(wid+20)+wid+20)%(wid+20),y=(i*71+t*3)%(ground*.8);c.globalAlpha=.2+.4*Math.sin(t*1.5+i);px(c,x,y,2,2,i%2?"#9ee268":"#7fffe8");}c.globalAlpha=1;}
     if(!far){const treeDrift=menu?0:camera*.46%112;for(let i=-1;i<wid/112+3;i++){const phase=i+Math.floor(camera*.46/112),x=i*112-treeDrift,height=ground*(.22+((phase*29+101)%23)/100);drawTree(c,x,ground,height,phase);}const towerOffset=menu?wid*.13:-(camera*.21%Math.max(1,wid*.8));drawTower(c,towerOffset,ground,t);drawDome(c,menu?wid*.84:wid+140-(camera*.13%Math.max(1,wid+310)),ground,t);}else drawFarEffects(c,t,score);
     drawFogBand(c,t,parallax,score,0);
     if(mid)drawArtTile(c,mid,ground-mid.height*C.artAssets.pixelWorld+C.viewport.midSink,midCamera(menu,parallax),wid,C.artAssets.pixelWorld,.25,1);else{drawFence(c,ground,parallax,t);drawSign(c,menu?wid*.66:wid+80-(camera*.64%Math.max(1,wid+140)),ground);}
@@ -154,7 +156,10 @@
     c.save();c.globalAlpha=.2*shadow;c.fillStyle="#07161c";c.beginPath();c.ellipse(Math.round(drawX+cfg.frameWidth*cfg.worldPixel*menuScale/2),scene.ground+1,22*shadow*menuScale,4*shadow,0,0,Math.PI*2);c.fill();c.restore();
     const originX=Math.round((drawX-(menu?0:scene.shift||0))*pixelScale),footY=Math.round(drawFeet*pixelScale),pivotX=originX+22*devicePx;
     c.save();c.setTransform(1,0,0,1,0,0);c.imageSmoothingEnabled=false;c.translate(pivotX+scene.shakeX*pixelScale,footY+scene.shakeY*pixelScale);if(angle)c.rotate(angle);
-    c.drawImage(sheet,frame*cfg.frameWidth,spec.row*cfg.frameHeight,cfg.frameWidth,cfg.frameHeight,-22*devicePx,-(cfg.footRow+1)*devicePx,cfg.frameWidth*devicePx,cfg.frameHeight*devicePx);c.restore();
+    c.drawImage(sheet,frame*cfg.frameWidth,spec.row*cfg.frameHeight,cfg.frameWidth,cfg.frameHeight,-22*devicePx,-(cfg.footRow+1)*devicePx,cfg.frameWidth*devicePx,cfg.frameHeight*devicePx);
+    // Riko aksesuarları: aynı dönüşümle (koşu, zıplama, eğilme, düşüş) sprite karesine bağlı çizilir.
+    if(DR.AccessoryArt)DR.AccessoryArt.draw(c,spec.row,frame,-22*devicePx,-(cfg.footRow+1)*devicePx,devicePx,DR.Storage.get().accessories);
+    c.restore();
   }
   function drawPlayerHitbox(player){
     if(!DR.Game.model.debugHitbox)return;const box=DR.Game.getPlayerBox();if(!box)return;const c=scene.ctx;

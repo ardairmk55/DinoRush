@@ -14,17 +14,48 @@ HTML Canvas ile çizilen, React veya zorunlu dış kütüphane kullanmayan özg�
 
 ## Mağaza
 
-Yalnızca kozmetik öğeler satılır; hız, zıplama, hitbox veya skor değişmez.
+Yalnızca kozmetik öğeler satılır; hız, zıplama, hitbox veya skor değişmez. Mağazada dört kategori vardır.
 
 - **GÖRÜNÜMLER:** Orman (ücretsiz), Amber, Gece Mavisi, Lavanta, Kızıl, Altın. Her biri `assets/dino/dino_sheet_<id>.png` sprite sayfasıdır; dosya yüklenemezse `dino_sheet.png` kullanılır.
-- **İZLER:** Toz (ücretsiz), Yaprak, Kıvılcım, Ateş Böceği — yalnızca koşu adımı partikülünün çizimi değişir.
-- **SAHNE:** Gece (ücretsiz), Şafak, Gün Batımı — yalnızca renk derecelendirme ve sis tonu değişir.
+- **İZLER:** Toz (ücretsiz), Yaprak, Kıvılcım, Ateş Böceği. Yalnızca koşu adımı partikülünün çizimi değişir.
+- **SAHNELER:** Gece (ücretsiz), Şafak, Gün Batımı. Yalnızca renk derecelendirme ve sis tonu değişir.
+- **AKSESUARLAR:** Riko için 17 piksel aksesuar, üç yuvada toplanır:
+  - Şapka: kaşif şapkası, kış beresi, korsan bandanası, ranger şapkası, yumurta başlık, altın taç.
+  - Gözlük: bilim insanı, güneş, pilot, neon ve gece görüş gözlükleri.
+  - Diğer: mini atkı, maceracı fuları, kaşif rozeti, sırt çantası, fosil kolyesi, ranger ekipmanı.
+
+  Aynı yuvada aynı anda tek aksesuar kuşanılır; farklı yuvalar birlikte kuşanılabilir. Aksesuarlar çıkarılabilir.
+
+  Çizimler `js/accessory-art.js` içindedir. Konum, sprite'taki ibik noktasına göre her kare için ölçülmüştür. Bu yüzden aksesuar menüde, koşuda, zıplamada, eğilmede ve düşüşte (dönerek) Riko'yla birlikte hareket eder.
+
+**Nadirlik ve fiyat.** Her ürünün nadirliği vardır ve fiyatı o nadirliğin aralığındadır:
+
+| Nadirlik | Aralık (fosil) | Ürünler |
+|---|---|---|
+| Başlangıç | 80–120 | Amber 100, Yaprak 90; Kaşif Şapkası 120, Kış Beresi 100, Bilim İnsanı Gözlüğü 90, Mini Atkı 80, Maceracı Fuları 110 |
+| Standart | 150–250 | Gece Mavisi 200, Şafak 180; Korsan Bandanası 180, Ranger Şapkası 250, Güneş Gözlüğü 160, Kaşif Rozeti 150, Sırt Çantası 220 |
+| Nadir | 300–500 | Lavanta 350, Kıvılcım 300, Gün Batımı 400; Pilot Gözlüğü 320, Fosil Kolyesi 450 |
+| Epik | 600–900 | Kızıl 650, Ateş Böceği 700; Yumurta Başlık 800, Neon Gözlük 650, Gece Görüş 900 |
+| Efsanevi | 1000–1500 | Altın 1200; Altın Taç 1400, Ranger Ekipmanı 1000 |
+
+Tüm katalog 11.150 fosildir. Ölçülen kazanım dakikada yaklaşık 57 fosildir (engelsiz, düzenli zıplayan test botu). Buna göre:
+- Başlangıç ürünleri 1–2 koşuda alınır.
+- Efsanevi ürünler yaklaşık 20 koşu ister.
+- Hepsi yaklaşık 3 saatlik koşuyla alınır.
+
+Fosil kazanım hızı (oyun mekaniği) değiştirilmedi. `tests/save.test.js` her fiyatın kendi nadirlik aralığında olduğunu denetler.
+
+**Satın alma:**
+- Satın almadan önce onay penceresi açılır.
+- Bakiye mağazanın üstünde sabit durur ve anında güncellenir.
+- Yetersiz bakiyede eksik miktar yazılır.
+- Hızlı çoklu tıklama tek satın alma yapar; sahip olunan ürün yeniden satın alınamaz.
 
 Varyant sayfaları `python tools/make_dino_variants.py` ile yeniden üretilir; betik 8 gövde/karın/diken/kontur rengini birebir eşler, göz/ağız/yanak renklerine dokunmaz ve boyut ile alfanın değişmediğini doğrular. Renk değişimi çalışma zamanında yapılmaz (file:// altında piksel okuması yoktur).
 
 ## Yerel kayıt
 
-Rekor, amber fosil bakiyesi, açılan/seçili kozmetikler ve tercihler `localStorage` içinde `dinorush-save-v1` anahtarıyla tutulur. Anahtar değişmedi; eski alanlar (`best`, `fossils`, `sound`, `vibration`, `lowEffects`, `owned`, `selected`) aynen korunur. Yeni alanlar eksikse varsayılan değer alır: `ownedTrails`, `selectedTrail`, `ownedScenes`, `selectedScene`, `masterVolume`, `sfxVolume`, `screenShake`, `flash`, `scanlines`, `playTime`, `saveVersion`. Eski sürümün `lagoon` görünümü `midnight` (Gece Mavisi) olarak taşınır. Tarayıcı verileri temizlenirse kayıt da silinir.
+Rekor, amber fosil bakiyesi, açılan/seçili kozmetikler ve tercihler `localStorage` içinde `dinorush-save-v1` anahtarıyla tutulur. Kayıt sürümü 3: `ownedAccessories`, `accessories` (`head`/`face`/`gear`), `menuMusicVolume`, `gameMusicVolume`, `particles`, `performance`, `reduceMotion` ve `savedAt` eklendi; v2'deki `musicVolume` iki müzik düzeyine taşınır. Sahip olunan ürünler, bakiye ve seçimler taşımada korunur. Anahtar değişmedi; eski alanlar (`best`, `fossils`, `sound`, `vibration`, `lowEffects`, `owned`, `selected`) aynen korunur. Yeni alanlar eksikse varsayılan değer alır: `ownedTrails`, `selectedTrail`, `ownedScenes`, `selectedScene`, `masterVolume`, `sfxVolume`, `screenShake`, `flash`, `scanlines`, `playTime`, `saveVersion`. Eski sürümün `lagoon` görünümü `midnight` (Gece Mavisi) olarak taşınır. Tarayıcı verileri temizlenirse kayıt da silinir.
 
 Kayıt ve satın alma mantığı tarayıcısız test edilir:
 
@@ -46,6 +77,7 @@ node --test tests/save.test.js tests/rules.test.js tests/riko.test.js
 - `js/save-core.js` — saf kayıt/migrasyon/satın alma mantığı (Node testleri bunu kullanır).
 - `js/storage.js`, `js/audio.js`, `js/ui.js` — güvenli yerel kayıt, Web Audio/titreşim, ekranlar.
 - `js/riko-messages.js`, `js/riko-core.js`, `js/riko.js` — Riko konuşma sistemi (aşağıya bakın).
+- `js/accessory-art.js` — Riko aksesuarlarının piksel çizimleri ve kare başına bağlanma noktaları.
 - `js/music.js`, `assets/audio/` — arka plan müziği (aşağıya bakın).
 - `js/panels.js` — mağaza (sekmeler, kart durumları, onay, önizlemeler) ve ayarlar paneli.
 - `tools/make_dino_variants.py`, `tests/save.test.js` — varyant üretimi ve birim testleri.
@@ -71,6 +103,27 @@ Menüdeki dino (Riko) 60 sabit mesajla konuşur. Mesaj metinleri `js/riko-messag
 - Konuşma hareketleri var olan sprite satırlarıyla yapılır: nefes, zıplama, eğilme. `prefers-reduced-motion` açıkken kapanır.
 - Geçmiş `localStorage` içinde `dinorush-riko-v1` anahtarıyla tutulur: `recentMessages`, `lastMessageId`, `firstVisit`, `lastSeen`. Kayıt bozuksa varsayılana döner.
 
+## Ayarlar
+
+Ayarlar altı bölümden oluşur.
+
+- **Ses:**
+  - Genel ses, menü müziği, oyun müziği ve efekt sesi kaydırıcıları; hepsi gerçek ses sistemine bağlıdır.
+  - Müzik ve tüm sesler için ayrı aç/kapat.
+- **Görüntü:**
+  - Tam ekran / pencere ve efekt kalitesi (Yüksek/Düşük).
+  - Performans modu: tuval 1x çözünürlükte çizilir, süs hareketleri kapanır.
+  - Parçacık efektleri, ekran sarsıntısı, çarpma flaşı, tarama çizgileri.
+  - Animasyonları azalt: arayüz geçişleri, Riko'nun hareketleri ve önizlemeler durur. İlk açılışta sistemin "hareketi azalt" tercihinden gelir.
+- **Kontroller:** klavye kartları, dokunmatik şema ve titreşim.
+- **Veri:**
+  - Kayıt durumu ve son kayıt zamanı; rekor, bakiye, kozmetik sayısı ve kayıt boyutu.
+  - İki aşamalı sıfırlama: 2 saniye basılı tut, sonra son uyarıyı onayla. İsteğe bağlı "tam sıfırlama" ayarları ve Riko geçmişini de siler.
+- **Gizlilik:** saklanan verilerin gerçek listesi, çerez kullanılmadığı, üçüncü taraf hizmet olmadığı ve KVKK bilgilendirmesi. Metin bilgilendirme amaçlıdır; hukuki inceleme önerisi metnin içinde yazar.
+- **Hakkında:** logo, oyun açıklaması, tasarım ve geliştirme (Arda Irmak), portföy düğmesi (yeni sekmede açılır), sürüm, müzik ve telif bilgisi.
+
+Mağaza ve ayarlarda başlık, sekmeler ve alt düğme sabit kalır; yalnız içerik alanı kayar. Yerleşim 320x568'den 1920x1080'e kadar 10 çözünürlükte otomatik denetlenir: taşma, çakışma, kesik metin ve 48 px dokunma hedefi.
+
 ## Arka plan müziği
 
 İki CC0 parça vardır: menü/mağaza/ayarlar için `assets/audio/menu-theme.mp3`, koşu için `assets/audio/gameplay-theme.mp3`. Kaynak, sanatçı ve işleme notları `assets/audio/CREDITS.md` içindedir.
@@ -78,7 +131,7 @@ Menüdeki dino (Riko) 60 sabit mesajla konuşur. Mesaj metinleri `js/riko-messag
 - **Geçişler.** `js/music.js` var olan `DR.UI` çağrılarını sarar: OYNA/yeniden dene oyun parçasını baştan başlatır, duraklatma yumuşakça susturur, devam kaldığı yerden sürer, oyun sonu ve menüye dönüş menü parçasına geçer. Geçişte çalan parça 0,45 sn'de kısılıp durur, yenisi ardından 0,7 sn'de açılır; iki parça hiç üst üste çalmaz.
 - **Döngü.** http(s) üzerinde Web Audio ile çalınır. Döngü noktaları `js/config.js` içindeki gerçek içerik uzunluğu ve MP3 gecikmesiyle (1105 örnek) örnek düzeyinde kesindir. `file://` ile açılınca `<audio>` öğesine düşülür; orada döngüde çok kısa bir boşluk olabilir.
 - **Otomatik oynatma.** İlk dokunuş ya da tuş basışından önce hiçbir şey çalmaz ve dosya indirilmez. Menü çalınca oyun parçası önceden çözülür. Sekme gizlenince ses bağlamı askıya alınır.
-- **Ayarlar.** Ayarlar > SES'te MÜZİK (aç/kapa) ve MÜZİK SESİ (%0–100) vardır; `dinorush-save-v1` içinde `music` ve `musicVolume` alanlarına kaydedilir (varsayılan açık, %70). Duyulan düzey ANA SES × MÜZİK SESİ'dir; SESSİZ müziği de susturur.
+- **Ayarlar.** Ayarlar > SES'te MÜZİK (aç/kapa), MENÜ MÜZİĞİ ve OYUN MÜZİĞİ (%0–100) vardır; `dinorush-save-v1` içinde `music`, `menuMusicVolume` ve `gameMusicVolume` alanlarına kaydedilir (varsayılan açık, %70). Duyulan düzey GENEL SES × parçanın kendi düzeyidir; TÜM SESLER kapalıyken müzik de susar.
 - **Yayın paketi.** Müzik service worker kurulumunda indirilmez; ilk çalındığında önbelleğe alınır, sonra çevrimdışı da çalar.
 
 ## Arayüz PNG çerçeveleri (Aşama 2)

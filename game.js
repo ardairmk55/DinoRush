@@ -22,7 +22,7 @@
     flushPlayTime();
     DR.Audio.init();model.mode="countdown";model.elapsed=0;model.world=0;model.score=0;model.runFossils=0;model.pickups.forEach(E.releaseFossil);model.pickups.length=0;model.obstacles.forEach(E.releaseObstacle);model.obstacles.length=0;model.particles.forEach(E.releaseParticle);model.particles.length=0;
     model.width=DR.Scene.metrics.width;model.height=DR.Scene.metrics.height;model.ground=DR.Scene.metrics.ground;model.player.x=P.playerX;model.player.y=model.ground;model.player.vy=0;model.player.duck=false;model.player.pose="prep";model.player.prep=0;model.player.jumpHeld=false;model.player.jumpBuffer=0;model.player.jumpHoldElapsed=0;model.player.coyote=0;model.player.frame=0;model.deathElapsed=0;model.deathStartY=model.ground;model.gameOverShown=false;model.gameOverResult=null;
-    accumulator=0;countdown=2.25;countdownDigit=3;obstacleClock=1.05;fossilClock=1.15;footClock=0;lastScore=-1;recordCelebrated=false;startBest=DR.Storage.get().best;particlesEnabled=!DR.Storage.get().lowEffects;DR.UI.enterCountdown();
+    accumulator=0;countdown=2.25;countdownDigit=3;obstacleClock=1.05;fossilClock=1.15;footClock=0;lastScore=-1;recordCelebrated=false;startBest=DR.Storage.get().best;particlesEnabled=DR.Storage.get().particles!==false;DR.UI.enterCountdown();
   }
   function stopToMenu(){flushPlayTime();model.mode="menu";model.pickups.forEach(E.releaseFossil);model.pickups.length=0;model.obstacles.forEach(E.releaseObstacle);model.obstacles.length=0;DR.UI.showMenu();}
   function pause(){if(model.mode!=="playing")return;model.mode="paused";flushPlayTime();DR.UI.showPause(true);}
