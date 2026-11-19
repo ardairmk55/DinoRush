@@ -706,6 +706,7 @@ html.png-btn-primary #gameApp #playButton>svg:not(.button-fossil){color:#2a1405;
 #gameApp .portfolio-btn:focus-visible{outline:3px solid #7fffe8;outline-offset:3px}
 #gameApp .about-list{width:min(440px,100%);text-align:left}
 #gameApp .about-rights{margin:0;color:#b9a684;font-size:11px;line-height:1.5}
+#gameApp .about-rights a{color:#ffd36b}
 
 /* Dar ekranlar: tek sütun yatay kart, 2x2 / 3x2 sekmeler */
 @media (max-width:620px){
