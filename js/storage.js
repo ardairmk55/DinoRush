@@ -30,6 +30,10 @@
     state(kind,id){return Core.itemState(data,catalog,kind,id);},
     buy(kind,id){const result=Core.buy(data,catalog,kind,id);if(result.ok)commit(result.data);return result;},
     equip(kind,id){const result=Core.equip(data,catalog,kind,id);if(result.ok)commit(result.data);return result;},
+    // Koşu sonu: istatistik, bonus, günlük seri ve başarımlar (js/progress-core.js). Sonuç oyun sonu ekranında gösterilir.
+    recordRun(run){const P=DR.ProgressCore,r=P.applyRun(data,catalog,run,{rewards:DR.Config.rewards});commit(r.save);return r;},
+    // Koşu dışı olaylardan sonra (satın alma, kuşanma) koşulu sağlanan başarımları aç.
+    checkAchievements(){const r=DR.ProgressCore.unlock(data,catalog);if(r.unlocked.length)commit(r.save);return r;},
     unequip(kind,id){const result=Core.unequip(data,catalog,kind,id);if(result.ok)commit(result.data);return result;},
     // Kayıt durumu: yerel depolama yazılabiliyor mu, son kayıt zamanı, kayıt boyutu (bayt).
     status(){let bytes=0;try{bytes=(w.localStorage.getItem(key)||"").length;}catch(_){}return {ok:lastOk!==false,savedAt:data.savedAt,bytes};},

@@ -49,5 +49,27 @@
     return score >= C.ptero.minScore;
   }
 
-  return { collide, playerBox, obstacleBox, pteroSize, pteroY, pteroLane, pteroAllowed };
+  /**
+   * Kıl payı için dikey boşluk: kutular yatayda örtüşürken aradaki dikey mesafe (çarpışmada 0 veya eksi).
+   * Yatayda örtüşmüyorlarsa Infinity döner (ölçülmez).
+   */
+  function clearance(a, b) {
+    if (!(a.x < b.x + b.w && b.x < a.x + a.w)) return Infinity;
+    return Math.max(b.y - (a.y + a.h), a.y - (b.y + b.h));
+  }
+
+  /**
+   * Engel deseni: skor eşikleri geçildikçe olasılıklar birikir.
+   * "pteroCombo" (alçak + yüksek pterosaur), "faller" (düşen kaya), "double" (bitişik iki engel, tek zıplamayla geçilir), "single".
+   */
+  function patternFor(score, r, C) {
+    const p = C.patterns;
+    let acc = 0;
+    if (score >= p.comboFrom) { acc += p.comboChance; if (r < acc) return "pteroCombo"; }
+    if (score >= p.fallerFrom) { acc += p.fallerChance; if (r < acc) return "faller"; }
+    if (score >= p.doubleFrom) { acc += p.doubleChance; if (r < acc) return "double"; }
+    return "single";
+  }
+
+  return { collide, playerBox, obstacleBox, pteroSize, pteroY, pteroLane, pteroAllowed, clearance, patternFor };
 });

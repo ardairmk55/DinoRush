@@ -40,6 +40,7 @@
   <script defer src="assets/manifest.js"></script>
   <script defer src="js/ui-skin.js"></script>
   <script defer src="js/config.js"></script>
+  <script defer src="js/progress-core.js"></script>
   <script defer src="js/save-core.js"></script>
   <script defer src="js/storage.js"></script>
   <script defer src="js/audio.js"></script>
@@ -56,6 +57,7 @@
   <script defer src="js/riko-core.js"></script>
   <script defer src="js/riko.js"></script>
   <script defer src="js/music.js"></script>
+  <script defer src="js/share.js"></script>
 </head>
 <body>
   <noscript><p class="noscript">DinoRush'ı oynamak için tarayıcınızda JavaScript'i etkinleştirin.</p></noscript>
@@ -90,6 +92,7 @@
     <div class="scanline-overlay" aria-hidden="true"></div>
 
     <div class="utility-rail">
+      <button class="metal-icon" id="profileButton" type="button" aria-label="Başarımlar ve istatistikler" title="Başarımlar"><svg aria-hidden="true"><use href="#i-trophy"/></svg><b class="rail-badge" id="profileBadge" hidden>0</b></button>
       <button class="metal-icon" id="soundButton" type="button" aria-label="Sesi kapat" title="Ses"><svg><use href="#i-sound"/></svg></button>
       <button class="metal-icon" id="fullscreenButton" type="button" aria-label="Tam ekran" title="Tam ekran"><svg><use href="#i-full"/></svg></button>
     </div>
@@ -127,6 +130,12 @@
     <div class="countdown" id="countdown" aria-live="assertive" aria-hidden="true"><span id="countdownValue">3</span></div>
     <div class="record-flash" id="recordFlash"><svg><use href="#i-spark"/></svg> YENİ REKOR</div>
 
+    <div class="tutorial-hint" id="tutorialHint" role="status" aria-live="assertive" hidden>
+      <div class="tutorial-key" id="tutorialKey" aria-hidden="true"></div>
+      <div class="tutorial-copy"><b id="tutorialTitle"></b><span id="tutorialText"></span></div>
+      <button class="tutorial-skip" id="tutorialSkip" type="button">ÖĞRETİCİYİ ATLA</button>
+    </div>
+    <div class="toast-stack" id="toastStack" aria-live="polite"></div>
     <div class="touch-hint" id="touchHint" aria-hidden="true"><span><b>Ekrana dokun:</b> zıpla</span><span><b>Aşağı kaydır:</b> eğil</span></div>
     <div class="touch-zones" id="touchZones" aria-label="Dokunmatik kontroller">
       <button class="touch-zone crouch-zone" id="crouchButton" type="button" aria-label="Eğil"><span class="touch-arrow">↓</span><small>EĞİL</small></button>
@@ -137,7 +146,7 @@
       <div class="panel-inner"><div class="panel-kicker"><i></i> GÜVENLİK ODASI</div><h2 id="pauseTitle">DURAKLATILDI</h2><p>Bir nefes al. Park hâlâ tehlikeli.</p><button class="amber-button panel-main" id="resumeButton" type="button"><svg><use href="#i-resume"/></svg><span>DEVAM ET</span></button><button class="metal-button panel-button" id="restartButton" type="button"><svg><use href="#i-restart"/></svg><span>YENİDEN BAŞLA</span></button><div class="pause-links"><button class="metal-button panel-button" type="button" data-return-menu><svg aria-hidden="true"><use href="#i-back"/></svg><span>ANA MENÜ</span></button><button class="metal-button panel-button" type="button" id="pauseSettings"><svg aria-hidden="true"><use href="#i-settings"/></svg><span>AYARLAR</span></button></div></div>
     </section>
     <section class="overlay-panel" id="gameOverPanel" role="dialog" aria-modal="true" aria-labelledby="gameOverTitle" hidden>
-      <div class="panel-inner"><div class="panel-kicker danger"><i></i> KOŞU SONU</div><div class="new-record-badge" id="newRecordBadge" hidden>YENİ REKOR</div><h2 id="gameOverTitle">YAKALANDIN</h2><p id="gameOverMessage">Bir dahaki sefere daha uzağa kaç.</p><div class="results-plaque"><div><span>BU KOŞU</span><b id="finalScore">000000</b></div><div><span>REKOR</span><b id="finalRecord">000000</b></div><div><span>KAZANILAN FOSİL</span><b id="finalFossils">00</b></div></div><p class="record-gap" id="recordGap"></p><button class="amber-button panel-main" id="retryButton" type="button" disabled><svg><use href="#i-restart"/></svg><span>TEKRAR OYNA</span></button><div class="game-over-actions"><button class="metal-button panel-button" type="button" data-return-menu><svg aria-hidden="true"><use href="#i-back"/></svg><span>ANA MENÜ</span></button><button class="metal-button panel-button" type="button" id="gameOverShop"><svg aria-hidden="true"><use href="#i-fossil"/></svg><span>MAĞAZA</span></button></div></div>
+      <div class="panel-inner"><div class="panel-kicker danger"><i></i> KOŞU SONU</div><div class="new-record-badge" id="newRecordBadge" hidden>YENİ REKOR</div><h2 id="gameOverTitle">YAKALANDIN</h2><p id="gameOverMessage">Bir dahaki sefere daha uzağa kaç.</p><div class="results-plaque"><div><span>BU KOŞU</span><b id="finalScore">000000</b></div><div><span>REKOR</span><b id="finalRecord">000000</b></div><div><span>KAZANILAN FOSİL</span><b id="finalFossils">00</b></div></div><p class="record-gap" id="recordGap"></p><dl class="run-breakdown" id="runBreakdown" aria-label="Kazanılan fosiller"></dl><button class="amber-button panel-main" id="retryButton" type="button" disabled><svg><use href="#i-restart"/></svg><span>TEKRAR OYNA</span></button><div class="game-over-actions"><button class="metal-button panel-button" type="button" data-return-menu><svg aria-hidden="true"><use href="#i-back"/></svg><span>ANA MENÜ</span></button><button class="metal-button panel-button" type="button" id="gameOverShop"><svg aria-hidden="true"><use href="#i-fossil"/></svg><span>MAĞAZA</span></button><button class="metal-button panel-button" type="button" id="shareButton"><svg aria-hidden="true"><use href="#i-spark"/></svg><span>PAYLAŞ</span></button></div></div>
     </section>
 
     <section class="modal-shell" id="collectionModal" role="dialog" aria-modal="true" aria-labelledby="collectionTitle" hidden>
@@ -181,6 +190,30 @@
         </div>
       </div>
     </section>
+    <section class="modal-shell" id="profileModal" role="dialog" aria-modal="true" aria-labelledby="profileTitle" hidden>
+      <div class="modal-plaque sheet profile-plaque">
+        <header class="sheet-head">
+          <div class="sheet-title"><div class="panel-kicker"><i></i> KAŞİF KARNESİ</div><h2 id="profileTitle">BAŞARIMLAR</h2></div>
+          <button class="close-metal" type="button" data-close-modal aria-label="Başarımları kapat"><svg><use href="#i-close"/></svg></button>
+        </header>
+        <div class="streak-card" id="streakCard">
+          <div class="streak-flame" aria-hidden="true"><b id="streakDays">0</b><span>GÜN</span></div>
+          <div class="streak-copy"><b id="streakTitle">GÜNLÜK SERİ</b><small id="streakText">-</small></div>
+          <div class="streak-meta"><span>EN İYİ</span><b id="streakBest">0</b></div>
+        </div>
+        <div class="ui-tabs sheet-tabs profile-tabs" id="profileTabs" role="tablist" aria-label="Kaşif karnesi bölümleri">
+          <button class="ui-tab selected" type="button" role="tab" id="profTab-ach" aria-controls="prof-ach" aria-selected="true">BAŞARIMLAR <span class="tab-count" id="achCount">0/0</span></button>
+          <button class="ui-tab" type="button" role="tab" id="profTab-stats" aria-controls="prof-stats" aria-selected="false" tabindex="-1">İSTATİSTİKLER</button>
+        </div>
+        <div class="sheet-scroll" id="profileScroll">
+          <div class="ach-grid" id="prof-ach" role="tabpanel" aria-labelledby="profTab-ach"></div>
+          <div id="prof-stats" role="tabpanel" aria-labelledby="profTab-stats" hidden><dl class="data-list stats-list" id="statsList"></dl></div>
+        </div>
+        <footer class="sheet-foot">
+          <button class="metal-button modal-done" type="button" data-close-modal><svg aria-hidden="true"><use href="#i-check"/></svg><span>TAMAM</span></button>
+        </footer>
+      </div>
+    </section>
     <section class="modal-shell" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" hidden>
       <div class="modal-plaque sheet settings-plaque">
         <header class="sheet-head">
@@ -221,6 +254,8 @@
           <div class="setting-row"><div><b id="lblShake">EKRAN SARSINTISI</b><small>Çarpınca kısa sarsıntı</small></div><button class="toggle-button" type="button" data-setting="screenShake" role="switch" aria-checked="true" aria-labelledby="lblShake"><i></i></button></div>
           <div class="setting-row"><div><b id="lblFlash">ÇARPMA FLAŞI</b><small>Çarpınca kısa parlama</small></div><button class="toggle-button" type="button" data-setting="flash" role="switch" aria-checked="true" aria-labelledby="lblFlash"><i></i></button></div>
           <div class="setting-row"><div><b id="lblMotion">ANİMASYONLARI AZALT</b><small>Arayüz geçişleri, Riko'nun hareketleri ve önizleme animasyonları durur</small></div><button class="toggle-button" type="button" data-setting="reduceMotion" role="switch" aria-checked="false" aria-labelledby="lblMotion"><i></i></button></div>
+          <div class="setting-row"><div><b id="lblJourney">KOŞUDA SAHNE GEÇİŞİ</b><small>Sahip olduğun sahneler arasında her 1.000 puanda bir geçiş</small></div><button class="toggle-button" type="button" data-setting="sceneCycle" role="switch" aria-checked="true" aria-labelledby="lblJourney"><i></i></button></div>
+          <div class="setting-row"><div><b id="lblContrast">YÜKSEK KONTRAST UYARILAR</b><small>Pterosaur uyarısı beyaz zeminde siyah ok ve "ZIPLA/EĞİL" yazısıyla; renk körlüğü dostu</small></div><button class="toggle-button" type="button" data-setting="highContrast" role="switch" aria-checked="false" aria-labelledby="lblContrast"><i></i></button></div>
           <div class="setting-row"><div><b id="lblScan">TARAMA ÇİZGİLERİ</b><small>Hafif eski ekran dokusu</small></div><button class="toggle-button" type="button" data-setting="scanlines" role="switch" aria-checked="false" aria-labelledby="lblScan"><i></i></button></div>
         </div>
 
@@ -243,6 +278,7 @@
             <li>Parmağını aşağı kaydırmak eğiltir; havadaysan hızla yere indirir.</li>
             <li>Dokunma düğmeleri ekranın alt köşelerinde, telefonun güvenli alanının içinde durur.</li>
           </ul>
+          <div class="setting-row"><div><b>ÖĞRETİCİ</b><small id="tutorialHintNote">İlk koşudaki adım adım anlatımı bir sonraki koşuda yeniden oyna</small></div><button class="ui-btn ui-btn--secondary ui-btn--small" type="button" id="replayTutorial" aria-describedby="tutorialHintNote"><svg aria-hidden="true"><use href="#i-restart"/></svg><span>TEKRAR OYNA</span></button></div>
           <div class="setting-row"><div><b id="lblVib">TİTREŞİM</b><small id="vibrationNote">Destekleyen telefonlarda kısa titreşim.</small></div><button class="toggle-button" type="button" data-setting="vibration" role="switch" aria-checked="false" aria-labelledby="lblVib" aria-describedby="vibrationNote"><i></i></button></div>
         </div>
 
@@ -279,7 +315,7 @@
           <p>DinoRush tarayıcıda çalışan bir oyundur. Üyelik, giriş, reklam, analitik veya takip hizmeti kullanmaz. Oyunun kodu kişisel veri toplamaz ve kayıtlarını hiçbir sunucuya göndermez; oyun yalnızca kendi dosyalarını (görseller, kod, müzik) kendi adresinden yükler.</p>
           <h3>Hangi veriler saklanır?</h3>
           <ul>
-            <li><b>Oyun kaydı</b> (<code>dinorush-save-v1</code>): en yüksek skor, fosil bakiyesi, satın alınan ve kuşanılan kozmetikler, toplam oynama süresi, ses/görüntü/kontrol tercihleri ve son kayıt zamanı.</li>
+            <li><b>Oyun kaydı</b> (<code>dinorush-save-v1</code>): en yüksek skor, fosil bakiyesi, satın alınan ve kuşanılan kozmetikler, toplam oynama süresi, oyun istatistikleri (koşu sayısı, kıl payı, zincir gibi sayılar), açılan başarımlar ve zamanları, günlük serinin son oynandığı gün, ses/görüntü/kontrol tercihleri ve son kayıt zamanı.</li>
             <li><b>Riko geçmişi</b> (<code>dinorush-riko-v1</code>): Riko'nun son söylediği mesajların numaraları, ilk ziyaret bilgisi ve son görülme zamanı (aynı mesajı tekrarlamamak için).</li>
           </ul>
           <p>Bu verilerde adın, e-posta adresin, konumun veya cihaz kimliğin yoktur.</p>
@@ -288,7 +324,7 @@
           <h3>Çerezler ve yerel depolama</h3>
           <p>Oyun çerez kullanmaz. Yukarıdaki iki yerel depolama kaydını kullanır. Yayınlanan sürüm, çevrimdışı oynayabilmen için oyun dosyalarını tarayıcının önbelleğine (service worker önbelleği) koyar; müzik dosyaları ilk çalındıklarında bu önbelleğe eklenir. Önbellekte kişisel veri yoktur.</p>
           <h3>Üçüncü taraf hizmetler</h3>
-          <p>Oyunun içinde üçüncü taraf hizmet (reklam, analitik, yazı tipi veya içerik sağlayıcısı) yoktur. Oyunu barındıran sunucu (örneğin GitHub Pages) her web sitesinde olduğu gibi erişim kayıtları (IP adresi, tarayıcı bilgisi) tutabilir; bu kayıtlar barındırma sağlayıcısının kendi gizlilik politikasına tabidir ve oyunun kodu tarafından oluşturulmaz. Hakkında bölümündeki portföy bağlantısı yalnızca sen tıklarsan, yeni sekmede ayrı bir web sitesini açar.</p>
+          <p>Oyunun içinde üçüncü taraf hizmet (reklam, analitik, yazı tipi veya içerik sağlayıcısı) yoktur. Oyunu barındıran sunucu (örneğin GitHub Pages) her web sitesinde olduğu gibi erişim kayıtları (IP adresi, tarayıcı bilgisi) tutabilir; bu kayıtlar barındırma sağlayıcısının kendi gizlilik politikasına tabidir ve oyunun kodu tarafından oluşturulmaz. Hakkında bölümündeki portföy bağlantısı yalnızca sen tıklarsan, yeni sekmede ayrı bir web sitesini açar. Oyun sonundaki PAYLAŞ düğmesi skor görselini cihazında oluşturur; görsel, yalnız senin seçtiğin uygulamaya cihazının kendi paylaşım menüsüyle gönderilir ya da indirilir. Oyun görseli hiçbir sunucuya yüklemez.</p>
           <h3>KVKK bilgilendirmesi</h3>
           <p>6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamında: oyun kişisel veri toplamadığı ve verileri yalnızca senin cihazında tuttuğu için geliştiriciye aktarılan bir kişisel veri yoktur. Cihazındaki kayıtları dilediğin an silebilirsin. Kanunun 11. maddesindeki haklarınla ilgili soruların için aşağıdaki iletişim yolunu kullanabilirsin. Barındırma sağlayıcısının tuttuğu erişim kayıtları için veri sorumlusu ilgili sağlayıcıdır; bu konudaki değerlendirme hukuki inceleme gerektirir.</p>
           <h3>Veri silme ve sıfırlama</h3>

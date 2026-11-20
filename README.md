@@ -30,6 +30,7 @@ Tarayıcıda çalışan, özgün piksel sanatlı bir sonsuz koşu oyunu. Kurulum
 - [Ekran görüntüleri](#ekran-görüntüleri)
 - [Öne çıkanlar](#öne-çıkanlar)
 - [Kontroller](#kontroller)
+- [İlerleme ve ödüller](#i̇lerleme-ve-ödüller)
 - [Mağaza ve ekonomi](#mağaza-ve-ekonomi)
 - [Riko](#riko)
 - [Ayarlar](#ayarlar)
@@ -74,12 +75,16 @@ Tarayıcıda çalışan, özgün piksel sanatlı bir sonsuz koşu oyunu. Kurulum
 | | |
 |---|---|
 | **Akıcı koşu** | Sabit 60 Hz simülasyon, zıplama tamponu ve "coyote time", basılı tutunca yükselen zıplama, havada hızlı iniş. |
-| **Okunur tehlikeler** | Kütük, kaya, çalı ve iki şeritte uçan pterosaur. Yüksek şerit eğilerek, alçak şerit zıplayarak geçilir; gelişi önceden işaretlenir. |
+| **Okunur tehlikeler** | Kütük, kaya, çalı ve iki şeritte uçan pterosaur; ilerledikçe çift engel, düşen kaya ve pterosaur kombosu. Gelişleri önceden işaretlenir. |
+| **Ustalık ödülleri** | Kıl payı geçişlere ve eksiksiz toplanan fosil kümelerine (zincir) anında bonus fosil. |
+| **Uzun vadeli hedefler** | 23 başarım, ayrıntılı istatistikler, günlük seri ödülü ve koşu sonu fosil dökümü. |
+| **İlk koşu öğreticisi** | Riko zıplamayı, fosil toplamayı ve eğilmeyi adım adım gösterir; atlanabilir, istenirse tekrar oynanır. |
+| **Paylaşım kartı** | Koşu sonunda skor, rekor ve Riko'nun görünümüyle 1200×630 görsel; telefonun paylaş menüsüyle gönderilir. |
 | **Riko** | 60 mesajlık, tekrar etmeyen, olaylara göre konuşan kahraman dinozor. |
 | **Kozmetik mağaza** | 6 görünüm, 4 iz, 3 sahne ve 17 Riko aksesuarı. Hepsi yalnızca görünüştür, oynanışı değiştirmez. |
-| **Müzik** | Menü ve koşu için iki CC0 parça, kesintisiz döngü, yumuşak geçişler, ayrı ses düzeyleri. |
+| **Ses** | Menü ve koşu için iki CC0 parça (kesintisiz döngü, yumuşak geçiş); kodda üretilen retro ses efektleri. |
 | **Her ekranda** | 320 px telefondan 4K masaüstüne uyumlu yerleşim; dikey ekranda yakın kamera ve büyük dokunma düğmeleri. |
-| **Erişilebilirlik** | Klavyeyle tam kullanım, görünür odak, ekran okuyucu duyuruları, "animasyonları azalt" ve performans modu. |
+| **Erişilebilirlik** | Klavyeyle tam kullanım, görünür odak, ekran okuyucu duyuruları, "animasyonları azalt", performans modu ve renk körlüğü dostu yüksek kontrastlı uyarılar. |
 | **Gizlilik** | Hesap, reklam, analitik veya çerez yok. Kayıt yalnızca cihazda tutulur. |
 | **Çevrimdışı** | PWA: yayın paketi service worker ile önbelleğe alınır. |
 | **Sıfır bağımlılık** | Saf HTML, CSS ve JavaScript. Derleme adımı olmadan çalışır. |
@@ -93,6 +98,29 @@ Tarayıcıda çalışan, özgün piksel sanatlı bir sonsuz koşu oyunu. Kurulum
 | Duraklat / devam | `P` · `Esc` | Sağ üstteki duraklat düğmesi |
 | Tam ekran | — | Sağ üstteki tam ekran düğmesi |
 | Çarpışma kutuları (geliştirme) | `H` (yalnız `?debug` ile) | — |
+
+## İlerleme ve ödüller
+
+| Sistem | Nasıl çalışır |
+|---|---|
+| **Kıl payı** | Bir engelin üstünden çarpışma kutusuyla en fazla 6 birim boşluk bırakarak geçince **+2 fosil**. Yüksek pterosaurun altından normal eğilme sayılmaz. |
+| **Zincir** | Bir fosil kümesinin tamamı toplanınca zincir bir kademe artar (en çok x5) ve **seviye × 2 fosil** verir. Tek fosil kaçarsa zincir kopar. |
+| **Koşu sonu bonusu** | Her 100 puana +1 fosil, rekor kırınca +25 fosil. Oyun sonu ekranı kazanılan her fosili kalem kalem gösterir. |
+| **Günlük seri** | Günün ilk koşusu 10 × seri günü fosil kazandırır (7. günde 70 fosille tavan). Bir gün atlanırsa seri 1'e döner. |
+| **Başarımlar** | 23 başarım: skor, fosil, kıl payı, pterosaur, zincir, koşu sayısı, maraton, seri ve aksesuar koleksiyonu. Her biri bir kez açılır ve fosil ödülü verir. |
+| **İstatistikler** | Koşu sayısı, ortalama skor, en uzun koşu, kıl payı, zincir, atlatılan pterosaur, zıplama ve en çok yakalayan engel. Menüdeki kupa düğmesinden açılır. |
+
+### Engel desenleri
+
+Oyun ilerledikçe tek engellerin arasına yeni desenler karışır. Hepsi `tests/rules.test.js` içinde kare kare simülasyonla, hem açıldıkları hızda hem tavan hızda geçilebilir olarak doğrulanır.
+
+| Desen | Açıldığı puan | Nasıl geçilir |
+|---|---:|---|
+| Çift engel (bitişik kütük/kaya) | 600 | Tek, iyi zamanlanmış zıplama (basılı tutmak işi kolaylaştırır) |
+| Düşen kaya | 900 | Gölgesi iniş yerini gösterir; indikten sonra zıplanır |
+| Pterosaur kombosu (alçak + yüksek) | 1.200 | Önce zıpla, inince eğil |
+
+Koşu sırasında sahip olunan sahneler (Gece, Şafak, Gün Batımı) her 1.000 puanda bir 3 saniyelik yumuşak geçişle değişir. Bu, Ayarlar > Görüntü'den kapatılabilir.
 
 ## Mağaza ve ekonomi
 
@@ -141,8 +169,8 @@ Mesajlar `js/riko-messages.js` içindedir. Seçim mantığı `js/riko-core.js` i
 | Bölüm | İçerik |
 |---|---|
 | **Ses** | Genel ses, menü müziği, oyun müziği, efekt sesi; müzik ve tüm sesler için aç/kapat |
-| **Görüntü** | Tam ekran, efekt kalitesi, performans modu (1x çözünürlük), parçacık efektleri, ekran sarsıntısı, çarpma flaşı, animasyonları azalt, tarama çizgileri |
-| **Kontroller** | Klavye kartları, dokunmatik şema, titreşim |
+| **Görüntü** | Tam ekran, efekt kalitesi, performans modu (1x çözünürlük), parçacık efektleri, ekran sarsıntısı, çarpma flaşı, animasyonları azalt, koşuda sahne geçişi, yüksek kontrastlı uyarılar, tarama çizgileri |
+| **Kontroller** | Klavye kartları, dokunmatik şema, öğreticiyi tekrar oyna, titreşim |
 | **Veri** | Kayıt durumu ve son kayıt zamanı, özet bilgiler, iki aşamalı sıfırlama (isteğe bağlı tam sıfırlama) |
 | **Gizlilik** | Saklanan verilerin gerçek listesi, çerez ve üçüncü taraf bilgisi, KVKK bilgilendirmesi |
 | **Hakkında** | Oyun künyesi, sürüm, müzik kaynakları, geliştiricinin portföy bağlantısı |
@@ -207,13 +235,16 @@ DinoRush/
 │   ├── rules.js            Çarpışma ve engel geometrisi (saf)
 │   ├── entities.js         Parçacık, engel ve fosil havuzları
 │   ├── save-core.js        Kayıt, taşıma ve satın alma mantığı (saf)
+│   ├── progress-core.js    İstatistik, başarım, günlük seri, koşu sonu bonusu (saf)
+│   ├── share.js            Skor paylaşım kartı
 │   ├── storage.js          Güvenli localStorage sarmalayıcısı
 │   ├── ui.js · panels.js   Ekranlar, mağaza ve ayarlar
 │   ├── riko-*.js · riko.js Riko'nun mesajları, seçim çekirdeği, balon
 │   ├── music.js · audio.js Arka plan müziği ve ses efektleri
 │   └── ui-skin.js · pwa.js PNG arayüz kaplaması, service worker kaydı
 ├── assets/                 Sprite sayfaları, arka planlar, arayüz PNG'leri, müzik
-├── tests/                  Node birim testleri (kayıt, kurallar, Riko)
+├── tests/                  Node birim testleri (kayıt, kurallar, Riko, ilerleme)
+│   └── e2e/                Tarayıcı testleri (oyun, özellikler, mağaza, yerleşim, Riko, müzik)
 ├── tools/                  Yayın paketi, denetim ve varlık üretim betikleri
 ├── public/                 404, robots.txt, güvenlik başlıkları
 └── docs/screenshots/       README görselleri
@@ -228,10 +259,10 @@ DinoRush/
 
 | Anahtar | İçerik |
 |---|---|
-| `dinorush-save-v1` | Rekor, fosil bakiyesi, sahip olunan ve kuşanılan kozmetikler, aksesuarlar, ayarlar, oynama süresi, son kayıt zamanı |
+| `dinorush-save-v1` | Rekor, fosil bakiyesi, sahip olunan ve kuşanılan kozmetikler, aksesuarlar, istatistikler, başarımlar, günlük seri, ayarlar, oynama süresi, son kayıt zamanı |
 | `dinorush-riko-v1` | Riko'nun son mesajları, ilk ziyaret bilgisi, son görülme zamanı |
 
-- Kayıt sürümü **3**'tür. Eski kayıtlar otomatik taşınır: sahip olunan ürünler, bakiye ve seçimler korunur.
+- Kayıt sürümü **4**'tür. Eski kayıtlar otomatik taşınır: sahip olunan ürünler, bakiye ve seçimler korunur. Daha önce oynamış oyunculara öğretici gösterilmez.
 - v1'deki `lagoon` görünümü Gece Mavisi'ne, v2'deki `musicVolume` iki müzik düzeyine taşınır.
 - Bozuk ya da yanlış tipli veri güvenli varsayılanlara döner.
 - `localStorage` engelliyse (ör. gizli sekme) oyun bellekte çalışmaya devam eder; Ayarlar > Veri bunu gösterir.
@@ -244,13 +275,14 @@ DinoRush/
 
 | Komut | Ne yapar |
 |---|---|
-| `npm test` | Kayıt, satın alma, aksesuar, ekonomi, çarpışma kuralları ve Riko birim testleri (Node'un yerleşik test koşucusu) |
+| `npm test` | Kayıt, satın alma, aksesuar, ekonomi, ilerleme, çarpışma kuralları ve Riko birim testleri (Node'un yerleşik test koşucusu) |
+| `npm run test:e2e` | Headless Chromium ile tarayıcı testleri: oyun akışı, öğretici, kıl payı, zincir, desenler, oyun sonu, profil, paylaşım, mağaza/ayarlar, 10 çözünürlükte yerleşim, Riko ve müzik. Önce `npm ci` ve `npx playwright-core install chromium` gerekir. |
 | `npm run audit` | Statik denetim: eksik dosya, yinelenen kimlik, adsız düğme, alt metni eksik görsel |
 | `npm run build` | `dist/` yayın paketini ve sürümlenmiş service worker'ı üretir |
 | `python tools/make_dino_variants.py` | Görünüm sprite sayfalarını renk eşlemesiyle yeniden üretir |
 | `python tools/make_ui_assets.py` | Arayüz PNG çerçevelerini kaynaklardan işler ve 9 parçalı kesim değerlerini ölçer |
 
-Her `main` yüklemesinde GitHub Actions testleri çalıştırır; testler geçerse paketi GitHub Pages'e yayınlar.
+Her `main` yüklemesinde GitHub Actions birim testlerini çalıştırır, geçerse paketi GitHub Pages'e yayınlar. Tarayıcı testleri ayrı bir işte, yayından bağımsız çalışır; başarısız olursa ekran görüntüleri indirilebilir.
 
 ## Yayınlama
 
@@ -298,6 +330,13 @@ Dikey ekranda görünür dünya 640 yerine 440 birimdir ve çizim 76 birim sola 
 - Aksesuarlar `js/accessory-art.js` içinde sprite pikseli cinsinden çizilir. Her karede ibik noktası ölçülmüştür; aksesuar bu noktaya bağlanır. Çizimler bir kez küçük tuvallere işlenir, sonra tam sayı ölçekle çizilir.
 - `DINO_PIXEL_WORLD` 2'dir. Ayakta hitbox kaynak pikselinde `{x:11,y:6,w:25,h:29}`, eğilmede `{x:9,y:17,w:30,h:18}`. Engel hitbox'ları sprite sınırlarından yüzde 12 içeri alınır.
 - Çalışma zamanında görsel piksel okuması yapılmaz; oyun `file://` altında da tam çalışır.
+
+</details>
+
+<details>
+<summary><b>Ses efektleri</b></summary>
+
+`js/audio.js` efektleri dış dosya kullanmadan kodda üretir (sfxr tarzı sentez: kare, testere, üçgen, sinüs ve gürültü dalgaları, frekans kayması, arpej, alçak geçiren süzgeç). Her ses ilk çalındığında bir kez `AudioBuffer`'a işlenir ve önbellekten çalınır; oyun döngüsünde ses hesabı yapılmaz. Zıplama, fosil (zincir seviyesiyle yükselen perde), zincir, kıl payı, çarpma, düşen kaya, rekor, başarım, seri, geri sayım ve arayüz sesleri vardır.
 
 </details>
 

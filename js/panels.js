@@ -188,7 +188,39 @@
       const before=shopKind==="accessory"?accById(DR.Storage.get().accessories[item.slot]):null;
       DR.Storage.equip(shopKind,item.id);DR.Audio.click();
       setStatus(item.name+" "+KIND_NOUN[shopKind]+" kuşanıldı."+(before?" ("+before.name+" çıkarıldı)":""),"ok");renderShop(item.id);DR.UI.refreshMenu();
+      announceAchievements();
     }
+  }
+  // Mağaza işlemlerinden sonra koşulu sağlanan başarımlar (ör. tüm şapkalar, üç yuva) açılır.
+  function announceAchievements(){
+    const r=DR.Storage.checkAchievements();if(!r.unlocked.length)return;
+    r.unlocked.forEach((a,i)=>{const t=DR.ProgressCore.TEXT[a.id]||[a.id,""];setTimeout(()=>{DR.UI.toast({kind:"achievement",title:"BAŞARIM: "+t[0],text:t[1]+"  +"+a.reward+" fosil"});DR.Audio.achievement();},300+i*900);});
+    $("collectionWallet").textContent=num(DR.Storage.get().fossils);DR.UI.refreshMenu();
+  }
+
+  /* ---------- Kaşif karnesi: günlük seri, başarımlar, istatistikler ---------- */
+  const ACH_ICON={play:"i-play",trophy:"i-trophy",fossil:"i-fossil",spark:"i-spark",ptero:"i-info",chain:"i-fossil",restart:"i-restart",clock:"i-pause",calendar:"i-check",hat:"i-box"};
+  function renderProfile(){
+    const s=DR.Storage.get(),P=DR.ProgressCore,today=P.dayKey(new Date()),d=s.daily||{streak:0,best:0,last:null};
+    const alive=d.last&&(d.last===today||P.dayDiff(d.last,today)===1),streak=alive?d.streak:0;
+    $("streakDays").textContent=String(streak);$("streakBest").textContent=String(d.best||0);
+    $("streakText").textContent=d.last===today?"Bugünün ödülü alındı. Yarın gel, seri "+(streak+1)+". güne çıksın (+"+C.rewards.dailyBase*Math.min(streak+1,C.rewards.dailyCap)+" fosil).":
+      streak>0?"Bugün bir koşu yap, seriyi "+(streak+1)+". güne taşı: +"+C.rewards.dailyBase*Math.min(streak+1,C.rewards.dailyCap)+" fosil.":"Bugünün ilk koşusu +"+C.rewards.dailyBase+" fosil kazandırır. Her gün gelirsen ödül büyür.";
+    $("streakCard").dataset.active=String(streak>0);
+    const list=P.progress(s,C.cosmetics),done=list.filter(a=>a.unlockedAt).length,grid=$("prof-ach");
+    $("achCount").textContent=done+"/"+list.length;grid.textContent="";
+    list.sort((a,b)=>(!!b.unlockedAt)-(!!a.unlockedAt)||(b.value/b.target)-(a.value/a.target)).forEach(a=>{
+      const t=P.TEXT[a.id]||[a.id,""],card=el("article","ach-card"+(a.unlockedAt?" is-done":""));card.dataset.id=a.id;
+      const ic=el("div","ach-icon");ic.innerHTML=icon(ACH_ICON[a.icon]||"i-trophy");
+      const body=el("div","ach-body"),head=el("div","ach-head");head.append(el("strong","ach-name",t[0]),el("span","ach-reward","+"+num(a.reward)));
+      body.append(head,el("small","ach-desc",t[1]));
+      if(a.unlockedAt)body.append(el("span","ach-date","Açıldı: "+new Date(a.unlockedAt).toLocaleDateString("tr-TR",{day:"numeric",month:"long",year:"numeric"})));
+      else{const bar=el("div","ach-bar"),fill=el("i");fill.style.width=Math.round(a.value/a.target*100)+"%";bar.append(fill);bar.setAttribute("role","progressbar");bar.setAttribute("aria-valuemin","0");bar.setAttribute("aria-valuemax",String(a.target));bar.setAttribute("aria-valuenow",String(a.value));bar.setAttribute("aria-label",t[0]+" ilerlemesi");body.append(bar,el("span","ach-progress",num(a.value)+" / "+num(a.target)));}
+      card.append(ic,body);grid.append(card);
+    });
+    const st=s.stats,deaths=Object.entries(st.deaths).sort((a,b)=>b[1]-a[1]),NAMES={log:"Kütük",rock:"Kaya",bush:"Çalı",flyer:"Pterosaur",faller:"Düşen kaya"};
+    const rows=[["KOŞU SAYISI",num(st.runs)],["EN YÜKSEK SKOR",num(s.best)],["ORTALAMA SKOR",num(st.runs?st.totalScore/st.runs:0)],["EN UZUN KOŞU",fmtTime(st.longestRun)],["KAZANILAN TOPLAM FOSİL",num(st.totalFossils)],["TEK KOŞUDA EN ÇOK FOSİL",num(st.bestRunFossils)],["KIL PAYI (TOPLAM)",num(st.nearMisses)],["TEK KOŞUDA KIL PAYI",num(st.bestRunNearMisses)],["TAMAMLANAN ZİNCİR",num(st.chains)],["EN UZUN ZİNCİR","x"+st.bestChain],["ATLATILAN PTEROSAUR",num(st.pterosDodged)],["ZIPLAMA",num(st.jumps)],["TOPLAM OYNAMA SÜRESİ",fmtTime(s.playTime)],["EN ÇOK YAKALAYAN",deaths[0]&&deaths[0][1]?NAMES[deaths[0][0]]+" ("+deaths[0][1]+")":"-"]];
+    const dl=$("statsList");dl.textContent="";rows.forEach(([k,v])=>{const row=el("div"),dt=el("dt",null,k),dd=el("dd",null,v);row.append(dt,dd);dl.append(row);});
   }
   function openConfirm(item){
     if(pendingBuy)return; // çift tıklama: tek onay penceresi
@@ -214,6 +246,7 @@
     renderShop(item.id);animateWallet(before,DR.Storage.get().fossils);DR.UI.refreshMenu();
     const card=$("shopGrid").querySelector('[data-id="'+item.id+'"]');if(card)burst(card);
     setStatus(item.name+" "+KIND_NOUN[kind]+" satın alındı. Hemen kullanmak için KUŞAN'a dokun.","ok");
+    announceAchievements();
   }
   function burst(card){
     card.classList.remove("just-bought");void card.offsetWidth;card.classList.add("just-bought");
@@ -344,6 +377,7 @@
   function open(id){
     if(id==="collectionModal"){setStatus("");renderShop();startPreviews();}
     if(id==="settingsModal"){if(DR.Game.flushPlayTime)DR.Game.flushPlayTime();syncSettings();}
+    if(id==="profileModal"){if(DR.Game.flushPlayTime)DR.Game.flushPlayTime();announceAchievements();renderProfile();$("profileScroll").scrollTop=0;}
   }
   function close(){stopPreviews();pendingBuy=null;const c=$("shopConfirm");if(c)c.hidden=true;cancelHold();hideResetConfirm(false);}
   // Esc önce iç onay kutusunu kapatır; kapattıysa true döner.
@@ -355,6 +389,9 @@
   function init(){
     bindTabs($("shopTabs"),tab=>{shopKind=tab.dataset.kind;setStatus("");$("shopScroll").scrollTop=0;renderShop();startPreviews();});
     document.querySelectorAll("#slotFilter .filter-chip").forEach(b=>b.addEventListener("click",()=>{accSlot=b.dataset.slot;$("shopScroll").scrollTop=0;renderShop();startPreviews();}));
+    const profPanels=[$("prof-ach"),$("prof-stats")];
+    bindTabs($("profileTabs"),tab=>{const id=tab.getAttribute("aria-controls");profPanels.forEach(p=>{p.hidden=p.id!==id;});$("profileScroll").scrollTop=0;});
+    $("replayTutorial").addEventListener("click",()=>{DR.Storage.update({tutorialDone:false});DR.Audio.click();DR.UI.toast({kind:"tutorial",title:"Öğretici hazır",text:"Bir sonraki koşuda Riko sana adım adım gösterecek."});});
     $("shopConfirmOk").addEventListener("click",confirmBuy);
     $("shopConfirmCancel").addEventListener("click",closeConfirm);
     bindSettings();

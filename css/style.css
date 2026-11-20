@@ -763,3 +763,79 @@ html.png-btn-primary #gameApp #playButton>svg:not(.button-fossil){color:#2a1405;
 /* Animasyon azaltma (Ayarlar > Görüntü): arayüz geçişleri ve süs animasyonları durur */
 html.reduce-motion #gameApp *,html.reduce-motion #gameApp *::before,html.reduce-motion #gameApp *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;animation-delay:0s!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
 html.reduce-motion .amber-spark{display:none}
+
+/* ===== Aşama 4: ilerleme, öğretici, bildirimler, profil ===== */
+/* Menü rayındaki başarım düğmesi ve yeni başarım sayacı */
+#gameApp #profileButton{position:relative}
+.game-app:not([data-mode=menu]) #profileButton{display:none}
+#gameApp .rail-badge{position:absolute;top:-6px;right:-6px;min-width:22px;height:22px;padding:0 6px;box-sizing:border-box;display:grid;place-items:center;border-radius:11px;background:#e05a3a;border:2px solid #2a1405;color:#fff;font:900 12px system-ui;pointer-events:none}
+/* Öğretici ipucu: oyun alanının üst ortasında, dokunma bölgelerinin üstünde */
+#gameApp .tutorial-hint{position:absolute;z-index:11;left:50%;top:calc(var(--safe-top) + 74px);transform:translateX(-50%);display:flex;align-items:center;gap:14px;width:min(560px,calc(100% - 24px));box-sizing:border-box;padding:12px 14px;background:rgba(13,42,44,.94);border:2px solid #9fd56f;border-radius:10px;box-shadow:0 6px 0 rgba(0,0,0,.35);color:#e9f6dc}
+#gameApp .tutorial-hint[hidden]{display:none}
+#gameApp .tutorial-hint[data-kind=duck]{border-color:#ffc23a}
+#gameApp .tutorial-key{display:flex;gap:6px;flex:none}
+#gameApp .tutorial-key kbd{min-width:44px;padding:8px 10px;box-sizing:border-box;text-align:center;background:#f3e6c8;border:2px solid #2a1405;border-bottom-width:5px;border-radius:6px;color:#2a1405;font:900 15px system-ui}
+#gameApp .tutorial-copy{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+#gameApp .tutorial-copy b{color:#ffe7a6;font:1000 20px var(--display,system-ui);letter-spacing:.06em}
+#gameApp .tutorial-copy span{font-size:13px;line-height:1.35}
+#gameApp .tutorial-skip{flex:none;align-self:stretch;min-height:44px;padding:6px 10px;background:transparent;border:1px solid #6fae58;border-radius:6px;color:#cfe9c4;font:800 11px system-ui;letter-spacing:.06em;cursor:pointer}
+#gameApp .tutorial-skip:focus-visible{outline:3px solid #ffd36b;outline-offset:2px}
+@media (max-width:520px){#gameApp .tutorial-hint{flex-wrap:wrap;gap:8px 10px;top:calc(var(--safe-top) + 64px)}#gameApp .tutorial-skip{flex:1 1 100%;min-height:44px}#gameApp .tutorial-copy b{font-size:17px}}
+/* Bildirimler: ekranın üstünde, kısa süre; birden fazlası alt alta */
+#gameApp .toast-stack{position:absolute;z-index:30;left:50%;top:calc(var(--safe-top) + 10px);transform:translateX(-50%);display:flex;flex-direction:column;gap:8px;width:min(420px,calc(100% - 24px));pointer-events:none}
+#gameApp .toast{display:flex;flex-direction:column;gap:2px;padding:10px 14px;background:rgba(20,13,7,.95);border:2px solid #e9a531;border-radius:8px;box-shadow:0 4px 0 rgba(0,0,0,.4);color:#f3e2c0;animation:toast-in .26s ease both}
+#gameApp .toast b{color:#ffd98a;font:1000 14px system-ui;letter-spacing:.05em}
+#gameApp .toast span{font-size:13px;line-height:1.35}
+#gameApp .toast--achievement{border-color:#ffc63f;background:linear-gradient(rgba(58,40,10,.96),rgba(26,17,6,.96))}
+#gameApp .toast--streak{border-color:#ff8a4a}
+#gameApp .toast--tutorial{border-color:#9fd56f}
+#gameApp .toast.leaving{animation:toast-out .3s ease both}
+/* Geniş ekranda bildirimler sağ üstte: ortadaki oyun sonu panelini kapatmaz */
+@media (min-width:980px){#gameApp .toast-stack{left:auto;right:max(env(safe-area-inset-right),16px);top:calc(var(--safe-top) + 78px);transform:none;width:min(360px,30vw)}}
+@keyframes toast-in{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+@keyframes toast-out{to{opacity:0;transform:translateY(-8px)}}
+/* Oyun sonu: kazanılan fosil dökümü */
+#gameApp .run-breakdown{display:grid;gap:3px;margin:6px auto 10px;width:min(360px,100%);padding:8px 12px;box-sizing:border-box;background:rgba(10,8,6,.5);border:1px solid #6d5a41;border-radius:6px;font-size:13px}
+#gameApp .run-breakdown[hidden]{display:none}
+#gameApp .run-breakdown>div{display:flex;justify-content:space-between;gap:12px}
+#gameApp .run-breakdown dt{color:#d6c4a2}
+#gameApp .run-breakdown dd{margin:0;color:#ffd264;font-weight:900;font-variant-numeric:tabular-nums}
+#gameApp .run-breakdown .total{margin-top:3px;padding-top:5px;border-top:1px solid #6d5a41}
+#gameApp .run-breakdown .total dt{color:#fff1cf;font-weight:900;letter-spacing:.08em}
+#gameApp .run-breakdown .total dd{color:#9fe36a;font-size:15px}
+#gameApp .game-over-actions{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:480px){#gameApp .game-over-actions{grid-template-columns:1fr 1fr}#gameApp .game-over-actions #shareButton{grid-column:1/-1}}
+/* Kaşif karnesi (profil) */
+#gameApp .profile-plaque.sheet{--sheet-w:760px}
+#gameApp .profile-tabs{--tabs:2}
+@media (max-width:400px){#gameApp .profile-tabs .ui-tab{white-space:normal;line-height:1.2;text-overflow:clip}#gameApp .profile-tabs .tab-count{display:inline-block;margin:2px 0 0}}
+#gameApp .tab-count{margin-left:4px;padding:1px 6px;border-radius:9px;background:#3a2a17;color:#ffd98a;font-size:11px}
+#gameApp .streak-card{flex:none;display:flex;align-items:center;gap:14px;margin:10px 0 2px;padding:10px 12px;background:#1a1410;border:1px solid #5b4733;border-radius:8px}
+#gameApp .streak-card[data-active=true]{border-color:#ff8a4a;background:linear-gradient(90deg,#3a1f0f,#1a1410 70%)}
+#gameApp .streak-flame{flex:none;display:grid;place-items:center;width:64px;height:64px;border-radius:50%;background:radial-gradient(circle at 50% 60%,#ffb347,#c2410c 70%);border:2px solid #2a1405;color:#2a1405;line-height:1}
+#gameApp .streak-card[data-active=false] .streak-flame{background:#3a3128;color:#b9a684}
+#gameApp .streak-flame b{font:1000 24px system-ui}
+#gameApp .streak-flame span{font:900 11px system-ui;letter-spacing:.08em}
+#gameApp .streak-copy{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+#gameApp .streak-copy b{color:#ffd98a;letter-spacing:.1em}
+#gameApp .streak-copy small{color:#d6c4a2;font-size:12px;line-height:1.4}
+#gameApp .streak-meta{flex:none;display:flex;flex-direction:column;align-items:center;color:#b9a684;font-size:11px;font-weight:900;letter-spacing:.08em}
+#gameApp .streak-meta b{color:#fff1cf;font-size:20px}
+#gameApp .ach-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr));gap:10px}
+#gameApp .ach-card{display:flex;gap:10px;padding:10px;background:#1c1714;border:1px solid #4d3d2c;border-radius:8px;min-width:0}
+#gameApp .ach-card.is-done{border-color:#c99a2e;background:linear-gradient(#2c2213,#1c1714)}
+#gameApp .ach-icon{flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:8px;background:#2a2219;border:1px solid #5b4733}
+#gameApp .ach-icon svg{width:24px;height:24px;fill:none;stroke:#8a7c66;stroke-width:2.2}
+#gameApp .ach-card.is-done .ach-icon{background:#ffcf5a;border-color:#7a3b0a}
+#gameApp .ach-card.is-done .ach-icon svg{stroke:#2a1405}
+#gameApp .ach-body{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1}
+#gameApp .ach-head{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+#gameApp .ach-name{color:#ffe7b0;font-size:14px;line-height:1.2}
+#gameApp .ach-card:not(.is-done) .ach-name{color:#d9c7a3}
+#gameApp .ach-reward{flex:none;color:#ffd264;font-weight:900;font-size:12px}
+#gameApp .ach-desc{color:#c9b897;font-size:12px;line-height:1.35}
+#gameApp .ach-date{color:#9fe36a;font-size:11px;font-weight:800}
+#gameApp .ach-bar{height:8px;background:#0f0c0a;border:1px solid #5b4733;border-radius:4px;overflow:hidden}
+#gameApp .ach-bar i{display:block;height:100%;background:linear-gradient(90deg,#c2410c,#ffcf5a)}
+#gameApp .ach-progress{color:#b9a684;font-size:11px;font-weight:800;font-variant-numeric:tabular-nums}
+@media (max-width:440px){#gameApp .streak-flame{width:52px;height:52px}#gameApp .streak-flame b{font-size:20px}#gameApp .streak-meta{display:none}}

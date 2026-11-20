@@ -29,7 +29,7 @@ function boot(store, opts) {
   };
   window.self = window;
   const ctx = vm.createContext({ window, self: window });
-  for (const file of ["js/config.js", "js/save-core.js", "js/storage.js"]) {
+  for (const file of ["js/config.js", "js/progress-core.js", "js/save-core.js", "js/storage.js"]) {
     vm.runInContext(fs.readFileSync(path.join(ROOT, file), "utf8"), ctx, { filename: file });
   }
   const DR = window.DinoRush;
@@ -63,7 +63,7 @@ test("boş kayıt: varsayılan alanlar", () => {
   assert.deepEqual(d.ownedTrails, ["dust"]); assert.equal(d.selectedTrail, "dust");
   assert.deepEqual(d.ownedScenes, ["night"]); assert.equal(d.selectedScene, "night");
   assert.equal(d.scanlines, false); assert.equal(d.screenShake, true); assert.equal(d.flash, true);
-  assert.equal(d.saveVersion, 3);
+  assert.equal(d.saveVersion, 4);
 });
 
 test("eski (v1) kayıt migrasyonu: alanlar korunur, lagoon -> midnight, yeni alanlar eklenir", () => {
@@ -84,7 +84,7 @@ test("eski (v1) kayıt migrasyonu: alanlar korunur, lagoon -> midnight, yeni ala
   const written = JSON.parse(store.raw());
   assert.equal(written.fossils, 38);
   assert.deepEqual(written.owned, ["fern", "amber", "midnight", "ember"]);
-  assert.equal(written.saveVersion, 3);
+  assert.equal(written.saveVersion, 4);
 });
 
 test("bozuk/yanlış tipli kayıt çökmez ve güvenli değerlere döner", () => {
@@ -287,7 +287,7 @@ test("aksesuar kaydı bozuksa güvenli: bilinmeyen, sahip olunmayan ve yanlış 
 test("v2 kaydı v3 sürümüne taşınır: sahip olunanlar, bakiye ve seçimler korunur", () => {
   const v2 = { saveVersion: 2, best: 2400, fossils: 37, owned: ["fern", "amber", "gold"], selected: "gold", ownedTrails: ["dust", "spark"], selectedTrail: "spark", ownedScenes: ["night", "dawn"], selectedScene: "dawn", music: true, musicVolume: 40, playTime: 99 };
   const d = boot(makeStore(JSON.stringify(v2))).Storage.get();
-  assert.equal(d.saveVersion, 3); assert.equal(d.fossils, 37); assert.equal(d.best, 2400);
+  assert.equal(d.saveVersion, 4); assert.equal(d.fossils, 37); assert.equal(d.best, 2400);
   assert.deepEqual(d.owned, ["fern", "amber", "gold"]); assert.equal(d.selected, "gold");
   assert.equal(d.selectedTrail, "spark"); assert.equal(d.selectedScene, "dawn");
   assert.equal(d.menuMusicVolume, 40); assert.deepEqual(d.ownedAccessories, []);

@@ -4,11 +4,15 @@
   "private": true,
   "description": "DinoRush: tarayıcıda oynanan özgün piksel sanat koşu oyunu.",
   "scripts": {
-    "test": "node --test tests/save.test.js tests/rules.test.js tests/riko.test.js",
+    "test": "node --test tests/save.test.js tests/rules.test.js tests/riko.test.js tests/progress.test.js",
     "audit": "node tools/audit.js",
-    "build": "python tools/build_dist.py"
+    "build": "python tools/build_dist.py",
+    "test:e2e": "node tests/e2e/run.js"
   },
   "engines": {
     "node": ">=20"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.65.1"
   }
 }

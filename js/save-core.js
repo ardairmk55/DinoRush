@@ -9,13 +9,14 @@
  */
 (function (root, factory) {
   "use strict";
-  const api = factory();
-  if (typeof module === "object" && module.exports) module.exports = api;
+  const node = typeof module === "object" && module.exports;
+  const api = factory(node ? require("./progress-core.js") : (root.DinoRush || {}).ProgressCore);
+  if (node) module.exports = api;
   else (root.DinoRush = root.DinoRush || {}).SaveCore = api;
-})(typeof self !== "undefined" ? self : this, function () {
+})(typeof self !== "undefined" ? self : this, function (Progress) {
   "use strict";
 
-  const SAVE_VERSION = 3;
+  const SAVE_VERSION = 4;
 
   // Kozmetik türü -> kayıttaki sahip olunanlar / seçili alanı.
   // "skin" eski kayıttaki owned/selected alanlarını aynen kullanır.
@@ -33,7 +34,7 @@
   // Aksesuar yuvaları: aynı yuvada tek aksesuar, farklı yuvalar birlikte kuşanılır.
   const ACCESSORY_SLOTS = ["head", "face", "gear"];
 
-  const SETTING_KEYS = ["sound", "vibration", "lowEffects", "masterVolume", "sfxVolume", "music", "menuMusicVolume", "gameMusicVolume", "particles", "performance", "reduceMotion", "screenShake", "flash", "scanlines"];
+  const SETTING_KEYS = ["sound", "vibration", "lowEffects", "masterVolume", "sfxVolume", "music", "menuMusicVolume", "gameMusicVolume", "particles", "performance", "reduceMotion", "screenShake", "flash", "scanlines", "sceneCycle", "highContrast", "tutorialDone"];
 
   function defaultId(catalog, kind) {
     const list = catalog[SLOTS[kind].list] || [];
@@ -66,6 +67,13 @@
       ownedAccessories: [],
       accessories: { head: null, face: null, gear: null },
       savedAt: null,
+      // v4: istatistik, başarım, günlük seri, öğretici ve erişilebilirlik
+      stats: Progress.emptyStats(),
+      achievements: {},
+      daily: { last: null, streak: 0, best: 0 },
+      tutorialDone: false,
+      sceneCycle: true,
+      highContrast: false,
       screenShake: !reduced,
       flash: !reduced,
       scanlines: false,
@@ -127,6 +135,14 @@
     value.performance = bool(source.performance, false);
     value.reduceMotion = bool(source.reduceMotion, base.reduceMotion);
     value.savedAt = Number.isFinite(source.savedAt) && source.savedAt > 0 ? source.savedAt : null;
+    value.stats = Progress.normalizeStats(source.stats);
+    value.achievements = Progress.normalizeAchievements(source.achievements);
+    value.daily = Progress.normalizeDaily(source.daily);
+    // Daha önce oynamış oyuncuya öğretici gösterilmez.
+    value.tutorialDone = source.tutorialDone === undefined ? value.best > 0 : source.tutorialDone === true;
+    delete value.lang;
+    value.sceneCycle = bool(source.sceneCycle, true);
+    value.highContrast = bool(source.highContrast, false);
     value.screenShake = bool(source.screenShake, base.screenShake);
     value.flash = bool(source.flash, base.flash);
     value.scanlines = bool(source.scanlines, false);

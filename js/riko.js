@@ -79,9 +79,8 @@
         }
         if(found!==null){best={side:"float",maxW,left:foundLeft,top:found,bw,area:0};break;}
       }
-      // Mağaza/ayarlar paneli ekranı kaplıyorsa (küçük telefonlar) balon paneli kapatmasın: bu mesaj atlanır.
-      const trig=bubble.dataset.trigger;
-      if(best.area>0&&(trig==="store"||trig==="settings")){hide(true);return;}
+      // Bir panel (mağaza, ayarlar, profil, oyun sonu) ekranı kaplıyorsa ve boş yer yoksa balon paneli kapatmasın: bu mesaj atlanır.
+      if(best.area>0&&doc.querySelector(".overlay-panel:not([hidden]),.modal-shell:not([hidden])")){hide(true);return;}
     }
     bubble.style.maxWidth=Math.min(best.maxW,vw-2*m)+"px";
     bubble.style.left=best.left+"px";bubble.style.top=best.top+"px";

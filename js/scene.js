@@ -83,7 +83,7 @@
   function drawArtTile(ctx,image,y,camera,width,scale,parallax,alpha,heightScale){if(!image)return;const tileW=image.width*scale,tileH=image.height*scale*(heightScale||1),drift=(camera*parallax)%tileW;ctx.save();ctx.imageSmoothingEnabled=false;ctx.globalAlpha=alpha===undefined?1:alpha;for(let x=-drift-tileW;x<width+tileW;x+=tileW)ctx.drawImage(image,Math.round(x),Math.round(y),tileW,tileH);ctx.restore();}
   function sceneDef(id){const list=C.cosmetics.scenes;return list.find(s=>s.id===(id||DR.Storage.get().selectedScene))||list[0];}
   // Renk derecelendirme: multiply ile ton, screen degrade ile ışık. Piksel okuması yapılmaz.
-  function applyGrade(ctx,id,x,y,w,h){const grade=sceneDef(id).grade;if(!grade)return;ctx.save();ctx.globalAlpha=1;ctx.globalCompositeOperation="multiply";ctx.fillStyle=grade.multiply;ctx.fillRect(x,y,w,h);ctx.globalCompositeOperation="screen";const g=ctx.createLinearGradient(0,y,0,y+h);g.addColorStop(0,grade.top);g.addColorStop(1,grade.bottom);ctx.fillStyle=g;ctx.fillRect(x,y,w,h);ctx.restore();}
+  function applyGrade(ctx,id,x,y,w,h,alpha){const grade=sceneDef(id).grade;if(!grade||alpha===0)return;ctx.save();ctx.globalAlpha=alpha===undefined?1:alpha;ctx.globalCompositeOperation="multiply";ctx.fillStyle=grade.multiply;ctx.fillRect(x,y,w,h);ctx.globalCompositeOperation="screen";const g=ctx.createLinearGradient(0,y,0,y+h);g.addColorStop(0,grade.top);g.addColorStop(1,grade.bottom);ctx.fillStyle=g;ctx.fillRect(x,y,w,h);ctx.restore();}
   function sheetFor(id){return DR.Assets.get("dinoSheet_"+(id||DR.Storage.get().selected))||DR.Assets.get("dinoSheet");}
   // Menüde çit katmanı sabit durur; tabela düğme yığınının arkasında (ekran ortası) kalır.
   const MID_SIGN_CENTER=372;
@@ -171,7 +171,9 @@
     if(img){c.save();c.imageSmoothingEnabled=false;c.drawImage(img,Math.round(x-half),Math.round(y+bob-half),size,size);c.restore();if(!low&&Math.floor(t*2+(phase||0))%5===0){c.globalAlpha=.9;px(c,x+13*k,y+bob-16*k,2*k,2*k,"#f4e6aa");c.globalAlpha=1;}}
     else drawFossilProcedural(x,y+bob,t,pulse);
   }
-  function drawObstacle(o,t){const c=scene.ctx,x=o.x,y=o.y,key={log:"obsLog",rock:"obsRock",bush:"obsBush"}[o.type],img=key&&DR.Assets.get(key);if(o.type==="flyer"){drawBat(o,t);return;}if(img){c.save();c.imageSmoothingEnabled=false;c.drawImage(img,Math.round(x),Math.round(y),o.w,o.h);c.restore();return;}if(o.type==="log"){px(c,x,y+11,o.w,o.h-11,"#63472b");px(c,x+5,y+5,o.w-11,12,"#8e6038");px(c,x+14,y,o.w-28,9,"#ad7a44");px(c,x+o.w-17,y+8,13,13,"#d0a261");px(c,x+o.w-13,y+11,7,7,"#745034");px(c,x+10,y+13,16,3,"#4f7135");px(c,x+31,y+4,12,4,"#789143");}
+  function drawObstacle(o,t){const c=scene.ctx,x=o.x,y=o.y,key={log:"obsLog",rock:"obsRock",bush:"obsBush",faller:"obsRock"}[o.type],img=key&&DR.Assets.get(key);if(o.type==="flyer"){drawBat(o,t);return;}
+    // Düşen kaya: inene kadar yerde büyüyen gölge ve kısa iz çizgileri (nereye ineceği önceden görünür).
+    if(o.type==="faller"&&o.falling){const k=Math.min(1,o.fallT/o.fallTime),gx=x+o.w/2;c.save();c.globalAlpha=.18+.3*k;c.fillStyle="#07161c";c.beginPath();c.ellipse(gx,scene.ground+1,o.w*(.25+.35*k),3+2*k,0,0,Math.PI*2);c.fill();c.globalAlpha=.35*(1-k);c.fillStyle="#ffe3a0";c.fillRect(gx-2,y-26,4,20);c.restore();}if(img){c.save();c.imageSmoothingEnabled=false;c.drawImage(img,Math.round(x),Math.round(y),o.w,o.h);c.restore();return;}if(o.type==="log"){px(c,x,y+11,o.w,o.h-11,"#63472b");px(c,x+5,y+5,o.w-11,12,"#8e6038");px(c,x+14,y,o.w-28,9,"#ad7a44");px(c,x+o.w-17,y+8,13,13,"#d0a261");px(c,x+o.w-13,y+11,7,7,"#745034");px(c,x+10,y+13,16,3,"#4f7135");px(c,x+31,y+4,12,4,"#789143");}
     else if(o.type==="rock"){px(c,x+3,y+16,o.w-6,o.h-16,"#343b36");px(c,x+8,y+6,o.w-18,15,"#566057");px(c,x+17,y,o.w-31,11,"#75806d");px(c,x+12,y+9,9,3,"#92a073");px(c,x+18,y+o.h-4,15,3,"#6f8d3b");}
     else if(o.type==="bush"){px(c,x+5,y+14,o.w-8,o.h-14,"#29462b");px(c,x+1,y+6,16,16,"#396338");px(c,x+15,y,o.w-24,23,"#4d7b38");px(c,x+o.w-16,y+8,14,16,"#3e6b33");px(c,x+9,y+7,5,4,"#83a944");}}
   function drawObstacleHitboxes(obstacles){if(!DR.Game.model.debugHitbox)return;const c=scene.ctx;c.save();c.fillStyle="rgba(255,55,45,.2)";c.strokeStyle="#ff554b";c.lineWidth=1.2;for(const o of obstacles){const b=DR.Game.getObstacleBox(o);c.fillRect(b.x,b.y,b.w,b.h);c.strokeRect(Math.round(b.x)+.5,Math.round(b.y)+.5,Math.round(b.w),Math.round(b.h));}c.restore();}
@@ -200,13 +202,17 @@
     c.restore();
   }
   // Ekrana girmek üzere olan pterosaur için sağ kenarda, geleceği yükseklikte yanıp sönen uyarı.
-  function drawPteroWarnings(obstacles,t){const c=scene.ctx,edge=scene.width+(scene.shift||0);for(const o of obstacles){if(o.type!=="flyer"||o.x<edge-4)continue;const box=DR.Rules.obstacleBox(o,C),cy=Math.round(box.y+box.h/2),x=Math.round(edge-20),a=lowMotion()?.95:.78+.22*Math.sin(t*16);
-    c.save();c.globalAlpha=.55;c.fillStyle="#07161c";c.beginPath();c.arc(x,cy,17,0,Math.PI*2);c.fill();
-    c.globalAlpha=a;c.fillStyle="#ffc23a";c.strokeStyle="#3a1d08";c.lineWidth=2;c.beginPath();c.moveTo(x+9,cy-13);c.lineTo(x+9,cy+13);c.lineTo(x-13,cy);c.closePath();c.fill();c.stroke();
-    c.fillStyle="#2a1405";c.fillRect(x+1,cy-7,3,8);c.fillRect(x+1,cy+3,3,3);c.restore();}}
+  // Uyarı yalnız renge dayanmaz: alçak şeritte YUKARI ok (zıpla), yüksek şeritte AŞAĞI ok (eğil).
+  // Yüksek kontrast ayarında beyaz zemin, siyah ok ve yazılı etiket kullanılır (renk körlüğü dostu).
+  function drawPteroWarnings(obstacles,t){const c=scene.ctx,edge=scene.width+(scene.shift||0),hc=DR.Storage.get().highContrast;for(const o of obstacles){if(o.type!=="flyer"||o.x<edge-4)continue;const box=DR.Rules.obstacleBox(o,C),cy=Math.round(box.y+box.h/2),x=Math.round(edge-(hc?26:20)),a=lowMotion()||hc?1:.78+.22*Math.sin(t*16),up=o.lane!=="high",r=hc?21:17;
+    c.save();c.globalAlpha=hc?1:.6;c.fillStyle=hc?"#ffffff":"#07161c";c.beginPath();c.arc(x,cy,r,0,Math.PI*2);c.fill();if(hc){c.lineWidth=3;c.strokeStyle="#000000";c.stroke();}
+    c.globalAlpha=a;c.fillStyle=hc?"#000000":"#ffc23a";c.strokeStyle=hc?"#000000":"#3a1d08";c.lineWidth=2;const s=hc?1.15:1,d=up?-1:1;
+    c.beginPath();c.moveTo(x,cy+d*13*s);c.lineTo(x-11*s,cy-d*1*s);c.lineTo(x-4*s,cy-d*1*s);c.lineTo(x-4*s,cy-d*11*s);c.lineTo(x+4*s,cy-d*11*s);c.lineTo(x+4*s,cy-d*1*s);c.lineTo(x+11*s,cy-d*1*s);c.closePath();c.fill();if(!hc)c.stroke();
+    if(hc){c.font="900 11px system-ui";c.textAlign="right";c.textBaseline="middle";const label=up?"ZIPLA":"EĞİL",tw=c.measureText(label).width;c.fillStyle="#ffffff";c.fillRect(x-r-tw-12,cy-9,tw+8,18);c.fillStyle="#000000";c.fillText(label,x-r-8,cy+1);}
+    c.restore();}}
   function drawForeground(camera,menu){const image=DR.Assets.get("fgFerns");if(image)drawArtTile(scene.ctx,image,scene.ground-image.height*C.artAssets.pixelWorld*.72,camera,scene.width,C.artAssets.pixelWorld,.42,.82,.72);else{drawFern(scene.ctx,0,scene.height,Math.min(1.25,scene.height/390),false);drawFern(scene.ctx,scene.width,scene.height,Math.min(1.3,scene.height/375),true);}}
   function drawParticle(c,p){const a=Math.max(0,p.life/p.max);
-    if(p.kind==="text"){c.globalAlpha=a;c.fillStyle=p.color;c.font="900 14px system-ui";c.textAlign="center";c.fillText(p.text,p.x,p.y);}
+    if(p.kind==="text"){c.globalAlpha=Math.min(1,a*1.6);c.font=(p.text.length>3?"900 13px":"900 14px")+" system-ui";c.textAlign="center";c.lineJoin="round";c.lineWidth=3;c.strokeStyle="#140b05";c.strokeText(p.text,p.x,p.y);c.fillStyle=p.color;c.fillText(p.text,p.x,p.y);}
     else if(p.kind==="trail-leaf"){c.globalAlpha=Math.min(1,a*1.4);const f=Math.floor((p.max-p.life)*10+p.seed)%3;px(c,p.x,p.y,f===0?4:f===1?3:2,f===0?2:3,p.color);px(c,p.x+1,p.y+1,1,1,"#2f5a24");}
     else if(p.kind==="trail-spark"){c.globalAlpha=a*.7;px(c,p.x-p.vx*.03,p.y-p.vy*.03,1.5,1.5,"#ff8a1f");c.globalAlpha=a;px(c,p.x,p.y,p.size,p.size,p.color);}
     else if(p.kind==="trail-firefly"){const pulse=.55+.45*Math.sin((p.max-p.life)*14+p.seed);c.globalAlpha=a*.3*pulse;px(c,p.x-2,p.y-2,6,6,p.color);c.globalAlpha=Math.min(1,a*1.3)*pulse;px(c,p.x,p.y,2,2,"#fbffd8");}
@@ -219,7 +225,9 @@
     model.pickups.forEach(f=>{if(!f.taken)drawFossil(f.x,f.y,t,0,f.phase);});model.obstacles.forEach(o=>drawObstacle(o,t));drawPteroWarnings(model.obstacles,t);
     model.particles.forEach(p=>drawParticle(c,p));
     const player=model.player;drawDino(player.x,player.y,t,player.pose,DR.Storage.get().selected,false,player,model.mode,model.deathElapsed,model.deathStartY);drawObstacleHitboxes(model.obstacles);drawPlayerHitbox(player);
-    c.restore();applyGrade(c,null,-8,-8,scene.width+16,scene.height+16);
+    c.restore();
+    // Koşuda sahne geçişi: önceki ve yeni sahnenin derecelendirmesi k oranında karışır.
+    const j=model.journey;if(j&&j.from&&j.k<1){applyGrade(c,j.from,-8,-8,scene.width+16,scene.height+16,1-j.k);applyGrade(c,j.to,-8,-8,scene.width+16,scene.height+16,j.k);}else applyGrade(c,j?j.to:null,-8,-8,scene.width+16,scene.height+16);
  if(flash){c.save();c.setTransform(1,0,0,1,0,0);c.globalAlpha=Math.max(.02,.18-model.deathElapsed*4);c.fillStyle=model.deathElapsed<C.physics.step?"#fff1ca":"#ffd36b";c.fillRect(0,0,scene.canvas.width,scene.canvas.height);c.restore();}
   }
   DR.Scene={prepare,resize,render,reportFrameTime,applyGrade,sheetFor,drawParticle,sceneDef,get performanceFactor(){return scene.quality;},get metrics(){return {width:scene.width+(scene.shift||0),viewWidth:scene.width,height:scene.height,ground:scene.ground,scale:scene.scale,dpr:scene.dpr};}};

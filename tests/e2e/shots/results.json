@@ -1,0 +1,187 @@
+[
+ {
+  "name": "320x568 menü: rekor kesilmiyor, düğmeler ekranda",
+  "ok": true,
+  "info": "{\"recordClipped\":false,\"play\":true,\"shop\":true,\"settings\":true,\"plaque\":true}"
+ },
+ {
+  "name": "320x568 mağaza kart durumları",
+  "ok": true,
+  "info": "fern:owned,amber:selected,midnight:buy,lavender:locked,ember:locked,gold:locked"
+ },
+ {
+  "name": "320x568 duraklat düğmeleri",
+  "ok": true,
+  "info": "DEVAM ET | YENİDEN BAŞLA | ANA MENÜ | AYARLAR"
+ },
+ {
+  "name": "320x568 konsol hatası yok",
+  "ok": true
+ },
+ {
+  "name": "390x844 menü: rekor kesilmiyor, düğmeler ekranda",
+  "ok": true,
+  "info": "{\"recordClipped\":false,\"play\":true,\"shop\":true,\"settings\":true,\"plaque\":true}"
+ },
+ {
+  "name": "390x844 mağaza kart durumları",
+  "ok": true,
+  "info": "fern:owned,amber:selected,midnight:buy,lavender:locked,ember:locked,gold:locked"
+ },
+ {
+  "name": "390x844 duraklat düğmeleri",
+  "ok": true,
+  "info": "DEVAM ET | YENİDEN BAŞLA | ANA MENÜ | AYARLAR"
+ },
+ {
+  "name": "390x844 konsol hatası yok",
+  "ok": true
+ },
+ {
+  "name": "844x390 menü: rekor kesilmiyor, düğmeler ekranda",
+  "ok": true,
+  "info": "{\"recordClipped\":false,\"play\":true,\"shop\":true,\"settings\":true,\"plaque\":true}"
+ },
+ {
+  "name": "844x390 mağaza kart durumları",
+  "ok": true,
+  "info": "fern:owned,amber:selected,midnight:buy,lavender:locked,ember:locked,gold:locked"
+ },
+ {
+  "name": "844x390 duraklat düğmeleri",
+  "ok": true,
+  "info": "DEVAM ET | YENİDEN BAŞLA | ANA MENÜ | AYARLAR"
+ },
+ {
+  "name": "844x390 konsol hatası yok",
+  "ok": true
+ },
+ {
+  "name": "1366x768 menü: rekor kesilmiyor, düğmeler ekranda",
+  "ok": true,
+  "info": "{\"recordClipped\":false,\"play\":true,\"shop\":true,\"settings\":true,\"plaque\":true}"
+ },
+ {
+  "name": "1366x768 mağaza kart durumları",
+  "ok": true,
+  "info": "fern:owned,amber:selected,midnight:buy,lavender:locked,ember:locked,gold:locked"
+ },
+ {
+  "name": "1366x768 duraklat düğmeleri",
+  "ok": true,
+  "info": "DEVAM ET | YENİDEN BAŞLA | ANA MENÜ | AYARLAR"
+ },
+ {
+  "name": "1366x768 konsol hatası yok",
+  "ok": true
+ },
+ {
+  "name": "yetersiz bakiye uyarısı \"N fosil eksik\"",
+  "ok": true,
+  "info": "Yetersiz bakiye: Altın için 900 fosil daha gerekiyor."
+ },
+ {
+  "name": "kilitli kartta eksik miktar",
+  "ok": true,
+  "info": "900 fosil eksik"
+ },
+ {
+  "name": "yetersiz bakiyede kayıt değişmedi",
+  "ok": true
+ },
+ {
+  "name": "satın alma onay kutusu açılır",
+  "ok": true,
+  "info": "Gece Mavisi görünümü için 200 fosil harcanacak. Kalan bakiye: 100."
+ },
+ {
+  "name": "vazgeçince bakiye aynı",
+  "ok": true
+ },
+ {
+  "name": "satın alınca amber parçacık patlaması",
+  "ok": true,
+  "info": "18 parçacık"
+ },
+ {
+  "name": "satın alma: bakiye 300 -> 100, sahip olunan",
+  "ok": true,
+  "info": "{\"fossils\":100,\"owned\":[\"fern\",\"amber\",\"midnight\"],\"selected\":\"amber\"}"
+ },
+ {
+  "name": "cüzdan ve menü bakiyesi güncellendi",
+  "ok": true
+ },
+ {
+  "name": "satın alınan kart KUŞAN durumunda",
+  "ok": true
+ },
+ {
+  "name": "seçili varyant yeniden yüklemede kalıcı",
+  "ok": true
+ },
+ {
+  "name": "oyunda seçili sheet kullanılıyor",
+  "ok": true,
+  "info": "dino_sheet_midnight.png"
+ },
+ {
+  "name": "iz ve sahne satın alındı ve kuşanıldı",
+  "ok": true,
+  "info": "{\"scene\":\"sunset\",\"trail\":\"firefly\",\"fossils\":100}"
+ },
+ {
+  "name": "koşuda ateş böceği iz partikülü",
+  "ok": true,
+  "info": "trail-firefly"
+ },
+ {
+  "name": "oyun sonu ekranı açıldı",
+  "ok": true
+ },
+ {
+  "name": "ayarlar kaydedildi (ses %35, tarama açık, sarsıntı kapalı)",
+  "ok": true
+ },
+ {
+  "name": "tarama çizgisi katmanı görünür",
+  "ok": true
+ },
+ {
+  "name": "VERİ: oynama süresi > 0 gösteriliyor",
+  "ok": true,
+  "info": "1 sn"
+ },
+ {
+  "name": "kısa basış sıfırlamaz",
+  "ok": true
+ },
+ {
+  "name": "2 sn basılı tutunca ikinci uyarı",
+  "ok": true
+ },
+ {
+  "name": "sıfırlama: ilerleme silindi, ayarlar korundu",
+  "ok": true,
+  "info": "{\"best\":0,\"fossils\":0,\"owned\":[\"fern\"],\"vol\":35}"
+ },
+ {
+  "name": "akış testinde konsol hatası yok",
+  "ok": true,
+  "info": ""
+ },
+ {
+  "name": "tarayıcıda eski kayıt: lagoon -> midnight, rekor korunur",
+  "ok": true
+ },
+ {
+  "name": "reduced-motion: sarsıntı ve flaş kapalı, not görünür",
+  "ok": true,
+  "info": "{\"shake\":\"false\",\"flash\":\"false\",\"note\":true}"
+ },
+ {
+  "name": "varyant dosyası yoksa varsayılan sheet",
+  "ok": true,
+  "info": "dino_sheet.png"
+ }
+]

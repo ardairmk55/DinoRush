@@ -62,6 +62,12 @@
     dinoSprite:{worldPixel:2,frameWidth:44,frameHeight:36,footRow:34,animations:{idle:{row:0,frames:6,fps:6},run:{row:1,frames:6,fps:14},jump:{row:2,frames:3,fps:1},duck:{row:3,frames:2,fps:10},dead:{row:4,frames:2,fps:4}},hitboxes:{standing:{x:11,y:6,w:25,h:29},duck:{x:9,y:17,w:30,h:18}}},
     // Pterosaur: sabit boyut, iki şerit. lanes = çarpışma kutusu alt kenarının zeminden yüksekliği.
     // low (10): ayakta ve eğilmiş dinoya çarpar -> ZIPLA. high (44): ayakta dinoya çarpar, eğilmiş dinonun (üst kenar 36) üstünden geçer -> EĞİL.
+    // Ödüller (js/progress-core.js, game.js). nearMissPx: engel ile çarpışma kutusu arasındaki en fazla boşluk (dünya birimi).
+    rewards:{nearMissPx:6,nearMissFossils:2,chainMax:5,chainPerLevel:2,scorePer:100,recordBonus:25,dailyBase:10,dailyCap:7},
+    // Engel desenleri (js/rules.js patternFor): skor eşiği ve olasılık. Tek engel varsayılandır.
+    patterns:{doubleFrom:600,doubleChance:.16,doubleGap:[0,12],fallerFrom:900,fallerChance:.14,fallTime:.75,comboFrom:1200,comboChance:.12,comboDelay:1.05},
+    // Koşuda sahne geçişi: sahip olunan sahneler arasında her sceneEvery puanda, sceneBlend saniyede geçilir.
+    journey:{sceneEvery:1000,sceneBlend:3},
     ptero:{scale:.75,speedFactor:1.1,hitboxInset:{x:.16,y:.22},lanes:{low:10,high:44},minScore:120,highFromScore:300,spawnLead:150},
     artAssets:{pixelWorld:2,hitboxInset:.12,sizes:{bgFar:[320,180],bgMid:[320,100],ground:[320,48],fgFerns:[320,48],logo:[320,176],log:[44,22],rock:[40,22],bush:[28,32],ptero:[40,26],fossil:[18,18]}},
     palette:{night:"#07161c",deep:"#0e2a30",forest:"#14404a",moon:"#7fffe8",moonSoft:"#bffff2",amber:"#ffb020",amberLight:"#ffd36b",amberDark:"#7a3b0a",green:"#5dbb3f",greenMid:"#3e8f2e",greenDark:"#2a6325",belly:"#f1e3a6",spine:"#e8452c",metal:"#2b2622",metalMid:"#4a3f36",metalLight:"#6b5a48",moss:"#4f7a2a"},
